@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1020">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%2790%27 font-size=%2790%27%3E%E2%9B%B7%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href='data:application/manifest+json,{"name":"SkiSense","short_name":"SkiSense","display":"standalone","background_color":"%230a1020","theme_color":"%230a1020","start_url":"."}'>
+<title>SkiSense – Ski Helmet Oximeter</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<style>
+:root{--bg:#0a1020;--card:#111a2e;--card2:#1a2745;--fg:#fff;--mut:#9db3d6;--bd:#2b3f66;--acc:#22d3ee;--hr:#ff6b81;--ok:#34d399;--warn:#fb923c;--bad:#ff4d5e;--snow:#bfe9ff}
+[data-theme=light]{--bg:#e9f3fb;--card:#fff;--card2:#dcebf8;--fg:#041028;--mut:#37507a;--bd:#8fb0d3;--acc:#0079c4;--hr:#c4123c;--ok:#067a55;--warn:#c25400;--bad:#c4122a;--snow:#0079c4}
+html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{max-width:100%;overflow-x:hidden}
+button,.btn,input,textarea,summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+img,canvas,svg{max-width:100%}
+body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.card{background:var(--card);border:2px solid var(--bd);border-radius:1.1rem;padding:1.1rem}
+.card.bd{border-left:6px solid}
+.btn{min-height:4rem;min-width:4rem;padding:0 1rem;border-radius:1rem;border:0;background:var(--card2);color:var(--fg);font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:.5rem}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#001018}
+.btn:active{transform:scale(.97)}
+html body input,html body textarea{min-height:3.5rem;width:100%;max-width:100%;box-sizing:border-box;font-size:max(16px,1rem);padding:.7rem 1.1rem;border-radius:1rem;border:2px solid transparent;background:var(--card2);color:var(--fg);font-size:1rem}
+html body input:focus,html body textarea:focus{outline:0;border-color:var(--acc)}
+input[type="text"],textarea,.sheet input{padding:.75rem 1rem !important}
+.mut{color:var(--mut)}
+.big{font-family:"Barlow Semi Condensed","SF Pro Rounded",ui-rounded,"Segoe UI Variable Display","Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums;font-weight:600;letter-spacing:.01em;line-height:.95}
+.mini{padding:.5rem}
+.btn:disabled{opacity:.4;pointer-events:none}
+.modal{position:fixed;inset:0;z-index:40;background:#000b;display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.sheet{background:var(--card);border:0;width:100%;max-width:28rem;max-height:92vh;overflow:auto;border-radius:1.5rem 1.5rem 0 0;padding:1rem;display:grid;gap:.75rem}
+.ov{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.5rem;gap:1rem}
+.ov.on{display:flex}
+#em{background:#dc2626;color:#fff;animation:fl 1s infinite}
+@keyframes fl{50%{background:#7f1d1d}}
+#grace{background:#fbbf24;color:#1a1000}
+#em a{color:#fff;text-decoration:underline}
+.btn.act{background:var(--acc);color:#001018;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 35%,transparent)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.seg .btn.snow{background:var(--snow);color:#06223d;box-shadow:0 0 0 3px color-mix(in srgb,var(--snow) 45%,transparent)}
+.pill{display:inline-flex;align-items:center;gap:.5rem;min-height:2.6rem;padding:0 1rem;border-radius:999px;font-weight:800;border:0;color:var(--p);background:color-mix(in srgb,var(--p) 16%,transparent);box-shadow:0 0 16px color-mix(in srgb,var(--p) 55%,transparent);max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill .dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--p);flex:none;animation:pu 1.8s infinite}
+.pill.ok{--p:var(--acc)}.pill.warn{--p:var(--warn)}.pill.bad{--p:var(--bad)}
+@keyframes pu{50%{opacity:.3}}
+#strip{display:none!important;max-width:28rem;margin:.5rem auto 0;padding:.6rem 1rem;border-radius:1rem;background:var(--bad);color:#fff;font-weight:800;text-align:center}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:35;padding:1.5rem .75rem calc(.6rem + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 40%)}
+nav>div{max-width:28rem;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+nav .btn{min-height:4rem;font-size:.9rem;padding:0 .4rem}
+#fbB{border:2px solid var(--bad)!important}
+header .btn{min-width:3.5rem;padding:0 .7rem}
+.sheet{padding-bottom:calc(1rem + env(safe-area-inset-bottom,0px))}
+@media (orientation:landscape) and (max-height:520px){.sheet{max-height:98vh;max-width:36rem}main{max-width:44rem!important}#sos{margin-top:1.5rem!important;min-height:5rem!important}}
+</style>
+</head>
+<body>
+<header class="sticky top-0 z-30 px-3 py-2" style="background:var(--bg);border-bottom:1px solid var(--bd)">
+ <div class="max-w-md mx-auto flex flex-wrap items-center justify-between gap-2"><div><b style="font-size:1.25rem;letter-spacing:-.02em;white-space:nowrap">⛷ SkiSense</b><div class="mut text-xs" style="white-space:nowrap">⏱ <span id="up">00:00:00</span> · <span id="net">☁ off · 📡 0</span></div></div>
+  <div class="flex gap-2"><button class="btn" onclick="openM('Bud')" aria-label="Ski Buddies">🧑‍🤝‍🧑</button><button class="btn" onclick="openM('Set')" aria-label="Settings">⚙</button><button id="cbtn" class="btn pri" onclick="openM('Con')">🧪 Sim</button></div>
+  <button id="pill" class="pill ok" style="display:none"><i class="dot"></i><span id="pShieldW"></span><span id="pillT">Starting…</span></button></div>
+ <div id="strip"></div>
+</header>
+<main class="max-w-md mx-auto p-3 space-y-4 pb-10">
+ <div id="watch" class="space-y-3" style="display:none">
+  <div class="card">
+   <div class="flex justify-between items-center"><div><b>👀 Group Watch</b><div id="wg" class="mut text-sm">Not in a group</div></div><b style="font-size:1.6rem"><span id="wn">0</span> 🎿</b></div>
+   <div class="grid grid-cols-3 gap-2 text-center mt-3">
+    <div class="card mini"><div class="mut text-xs">OK</div><b id="wOk" style="font-size:1.4rem;color:var(--ok)">0</b></div>
+    <div class="card mini"><div class="mut text-xs">CHECK</div><b id="wWa" style="font-size:1.4rem;color:var(--warn)">0</b></div>
+    <div class="card mini"><div class="mut text-xs">DANGER</div><b id="wBa" style="font-size:1.4rem;color:var(--bad)">0</b></div>
+   </div>
+  </div>
+  <div id="wl" class="grid gap-2"></div>
+  <p class="mut text-xs">Sorted by risk · Red = SOS / low O₂ · Yellow = offline / no signal · Keep this screen open</p>
+ </div>
+ <div id="me" class="space-y-3">
+ <div id="ban" class="card flex gap-3 items-center"><div id="banI" class="text-3xl">🛡</div><div><b id="banT">Starting…</b><div id="banD" class="mut text-sm"></div><button id="banB" class="btn mt-2" style="display:none;min-height:2.75rem" onclick="openM('Con')">Change source (optional)</button></div></div>
+ 
+ <div class="grid grid-cols-2 gap-3">
+  <button class="card text-left" onclick="openDet('hr')"><div class="text-sm font-bold" style="color:var(--hr)">❤ HEART RATE</div><div><span id="hv" style="font-size:4.6rem;line-height:1;font-weight:900;letter-spacing:-.03em">--</span> <span class="mut text-sm">BPM</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
+  <button class="card text-left" onclick="openDet('sp')"><div class="text-sm font-bold" style="color:var(--acc)">💧 BLOOD OXYGEN</div><div><span id="sv" style="font-size:4.6rem;line-height:1;font-weight:900;letter-spacing:-.03em">--</span> <span class="mut text-sm">%</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
+ </div>
+ <div class="card"><div class="text-sm font-bold mb-2">LIVE PPG <span class="mut font-normal">(filtered, ~25 Hz)</span></div><div style="height:8rem"><canvas id="ppgC" style="width:100%;height:100%"></canvas></div></div>
+ <div class="card"><div class="text-sm font-bold mb-2">30-MIN TREND <span class="mut font-normal">(1-min averages)</span></div><div style="height:12rem"><canvas id="trC"></canvas></div></div>
+ <button id="sos" class="btn" style="margin-top:3.5rem;margin-bottom:2rem;width:100%;min-height:6.5rem;background:#ff1a3c;color:#fff;border-color:#ff1a3c;box-shadow:0 0 0 3px #ff1a3c55,0 0 32px #ff1a3caa;position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-size:1.5rem;font-weight:900;letter-spacing:.02em"><span id="sosB" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#0007"></span><span style="position:relative">🆘 HOLD 1.5 s FOR SOS</span></button>
+ </div>
+</main>
+
+
+<div id="toast" class="fixed left-3 right-3 z-50 text-center card" style="bottom:1.5rem;opacity:0;transition:opacity .3s;pointer-events:none;max-width:28rem;margin:auto"></div>
+
+<div id="fbB" class="card space-y-2" style="display:none;position:fixed;top:calc(5.5rem + env(safe-area-inset-top,0px));left:.5rem;right:.5rem;z-index:45;max-width:28rem;margin:auto"><b id="fbT"></b><div class="mut text-sm">Staying in live mode - no simulated data is shown. Vitals read -- until the sensor is back.</div><button class="btn pri" onclick="openM('Con')">Reconnect / change source</button><button class="btn" onclick="resetLink()">♻ Reset connection</button></div>
+
+<div class="modal" id="mCon"><div class="sheet"><b>Data source</b>
+ <button id="bleB" class="btn" onclick="connBLE()">📶 Bluetooth (BLE-Nano)</button>
+ <button id="serB" class="btn" onclick="connSer()">🔌 USB Serial (115200)</button>
+ <button id="simB" class="btn" onclick="userSim()">🧪 Simulation</button>
+ <button class="btn" onclick="resetLink()">♻ Reset connection (flush buffers)</button>
+ <button id="lockB" class="btn" onclick="toggleLock()">🔓 Lock to Simulation: off</button>
+ <p class="mut text-sm">If a live link drops or sends nothing for 5 s, the app stays in live mode, shows a Sensor disconnected banner and keeps trying to re-link. It never switches to simulation by itself. Reset connection closes and reopens the link and flushes the buffers, with no unplugging. Lock to Simulation pins the app in simulation until you unlock it (unlocks on reload). Web Bluetooth/Serial need Chrome or Edge (not iOS).</p>
+ <button class="btn" onclick="closeM(this)">Close</button></div></div>
+
+<div class="modal" id="mSet"><div class="sheet"><b>Settings</b>
+ <label class="mut text-sm">Your name<input type="text" id="nm" maxlength="20" oninput="cfg.name=this.value.slice(0,20)||'Skier';saveCfg()"></label>
+ <div class="flex gap-2 items-center"><button class="btn" onclick="scl(-.1)" aria-label="Smaller text">A-</button><b id="scl" class="flex-1 text-center">100%</b><button class="btn" onclick="scl(.1)" aria-label="Larger text">A+</button></div>
+ <div class="seg"><button id="altL" class="btn" onclick="setAlt('low')">🌾 Low Altitude</button><button id="altH" class="btn" onclick="setAlt('ext')">🏔️ High Altitude</button></div>
+ <button id="thm" class="btn" onclick="cfg.theme=cfg.theme==='dark'?'light':'dark';saveCfg();applyCfg()">☀ Light</button>
+ <button id="fastB" class="btn" onclick="toggleFast()">⏩ Demo speed: 1× (real time)</button>
+ <button id="testB" class="btn" onclick="lowTest=!lowTest;this.textContent='🫁 Simulate low SpO₂: '+(lowTest?'ON':'off')">🫁 Simulate low SpO₂: off</button>
+ <button class="btn" onclick="exp()">⬇ Export 24 h CSV</button>
+ <button class="btn" onclick="if(confirm('Delete stored history?')){hist=[];LS.set('ag_hist',[]);drawTrend()}">🗑 Clear history</button>
+ <pre id="log" class="mut text-xs" style="white-space:pre-wrap;max-height:8rem;overflow:auto"></pre>
+ <button class="btn" onclick="closeM(this)">Close</button></div></div>
+
+<div class="modal" id="mRst"><div class="sheet"><b>Clear all data?</b>
+ <p id="rstT" class="mut text-sm"></p>
+ <button id="rstY" class="btn pri">Clear &amp; continue</button>
+ <button class="btn" onclick="closeM(this)">Cancel</button></div></div>
+
+<div class="modal" id="mBud"><div class="sheet"><b>🧑‍🤝‍🧑 Ski Buddies</b>
+<button id="roleB" class="btn pri" onclick="toggleRole()">🎿 Role: Skier (tap to switch)</button>
+ <p class="mut text-xs">Skier = shares your vitals. Coach / Parent = watches the whole group and shares nothing.</p>
+ <div id="gInfo" class="card mut text-sm">Not in a group</div>
+ <div class="flex gap-2"><button class="btn pri flex-1" onclick="openJoin()">➕ Join Group</button><button class="btn flex-1" onclick="leaveG()">Leave</button></div>
+ <div id="qrBox" class="card text-center" style="display:none"><canvas id="qrC" style="margin:0 auto;background:#fff;border-radius:.5rem;max-width:100%"></canvas><div class="text-sm font-bold mt-2">Scan to join this group</div>
+  <label class="mut text-xs block text-left mt-2">Host / Server URL (the address other phones can reach)<input type="text" id="hostIn" placeholder="auto: this page's address" oninput="setHost(this.value)"></label>
+  <div id="qrU" class="mut text-xs mt-2" style="word-break:break-all"></div><button class="btn mt-2" onclick="joinUrl()&&navigator.clipboard&&navigator.clipboard.writeText(joinUrl())">📋 Copy join link</button></div>
+ <div id="bl" class="grid gap-2"></div>
+ <details><summary class="btn">📡 Offline mesh link</summary>
+  <p class="mut text-sm my-2">Both phones must share a local link (same hotspot/Wi-Fi). 1) Host: Create invite, send code. 2) Guest: paste, Connect, send answer back. 3) Host: paste answer, Connect.</p>
+  <textarea id="sdp" rows="4" placeholder="Invite / answer code"></textarea>
+  <div class="flex gap-2 mt-2"><button class="btn flex-1" onclick="p2pOffer()">Create invite</button><button class="btn flex-1" onclick="p2pAccept()">Connect</button><button class="btn" onclick="navigator.clipboard&&navigator.clipboard.writeText($('sdp').value)" aria-label="Copy">📋</button></div>
+ </details>
+ <button class="btn" onclick="closeM(this)">Close</button></div></div>
+
+<div class="modal" id="mJoin"><div class="sheet"><b>➕ Join Group</b>
+ <label class="mut text-sm">Your name<input type="text" id="jn" maxlength="20" placeholder="Your name" autocomplete="off"></label>
+ <label class="mut text-sm">Group name / code<input type="text" id="gc" maxlength="24" placeholder="e.g. 0ZBG21 (new code = new group)" autocomplete="off" autocapitalize="characters"></label>
+ <label class="mut text-sm">Firebase DB link<input type="text" id="fb" placeholder="https://xxx.firebasedatabase.app" autocomplete="off"></label>
+ <button class="btn pri" onclick="joinG()">Join</button>
+ <button class="btn" onclick="closeM(this)">Cancel</button></div></div>
+
+<div class="modal" id="mDet"><div class="sheet"><b id="dT"></b>
+ <div class="grid grid-cols-3 gap-2 text-center">
+  <div class="card"><div class="mut text-xs">AVERAGE</div><b id="dAvg"></b></div>
+  <div class="card"><div class="mut text-xs">HIGH</div><b id="dHi"></b></div>
+  <div class="card"><div class="mut text-xs">LOW</div><b id="dLo"></b></div>
+ </div>
+ <div class="grid grid-cols-2 gap-2 text-center">
+  <div class="card"><div class="mut text-xs">RECORDED</div><b id="dMin"></b></div>
+  <div class="card"><div id="dLowL" class="mut text-xs">LOW SpO₂</div><b id="dLow"></b></div>
+ </div>
+ <div style="height:14rem"><canvas id="dC"></canvas></div>
+ <button class="btn" onclick="closeM(this)">Close</button></div></div>
+
+<div class="ov" id="grace"><div style="font-size:3rem">⚠</div><b id="graceT" style="font-size:1.6rem"></b>
+ <div style="font-size:1.2rem">SpO₂ <b id="gS"></b>% — alerting buddies in <b id="gC" style="font-size:2.5rem">10</b> s</div>
+ <button class="btn" onclick="imOk()" style="width:100%;min-height:6rem;font-size:1.8rem;background:#064e3b;color:#fff;border-color:#064e3b">✅ I'M OK</button></div>
+
+<div class="ov" id="em"><div style="font-size:4rem">🆘</div><b id="emT" style="font-size:2rem"></b><b id="emN" style="font-size:2.4rem"></b>
+ <div id="emK" style="font-size:1.2rem"></div><div id="emV" style="font-size:1.6rem;font-weight:800"></div><div id="emG" style="font-size:1.2rem"></div><div id="emW" style="opacity:.85"></div>
+ <button class="btn" onclick="$('em').classList.remove('on');alarm(false)" style="width:100%;min-height:5rem;font-size:1.5rem;background:#fff;color:#7f1d1d;border-color:#fff">DISMISS</button></div>
+
+<script>
+const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),pad=n=>String(n).padStart(2,'0'),hm=t=>{const d=new Date(t);return pad(d.getHours())+':'+pad(d.getMinutes())};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),col=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const DEFAULT_FB='https://skisense-d7780-default-rtdb.asia-southeast1.firebasedatabase.app';
+const cfg=Object.assign({name:'Skier',scale:1,theme:'dark',fb:DEFAULT_FB,host:'',group:'',fast:false,alt:'low',role:'s'},LS.get('ag_cfg',{}));cfg.fast=false;
+/* only a Realtime Database ORIGIN is ever stored; console / other URLs are rejected */
+const cleanFb=v=>{try{const u=new URL(String(v).trim());return u.protocol==='https:'&&/(\.firebasedatabase\.app|\.firebaseio\.com)$/.test(u.hostname)?u.origin:''}catch(e){return''}};
+cfg.fb=cleanFb(cfg.fb)||DEFAULT_FB;
+const TH={low:{warn:90,crit:85},ext:{warn:85,crit:80}},th=()=>cfg.alt==='ext'?TH.ext:TH.low;
+function altUI(){$('altL').classList.toggle('act',cfg.alt!=='ext');$('altH').classList.toggle('snow',cfg.alt==='ext');tr.options.scales.yS.min=cfg.alt==='ext'?70:80}
+function setAlt(v){if(cfg.alt===v)return;cfg.alt=v;saveCfg();lowSince=0;if(grace&&vit.spo2>=th().warn)endGrace();altUI();sendCmd('A'+(v==='ext'?1:0));drawTrend();toast(v==='ext'?'High altitude: 90% is not an alarm':'Low altitude: alert below 90%')}
+let noSig=0,skip=false,okAt=0,sosAt={},warned={};
+let wl=null;
+const keepAwake=async()=>{try{if(!navigator.wakeLock||wl)return;wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}catch(e){wl=null}};  /* released automatically when the tab is hidden, so re-acquire on return */
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)keepAwake()});
+keepAwake();
+const myId=LS.get('ag_id',null)||(()=>{const i=Math.random().toString(36).slice(2,9);LS.set('ag_id',i);return i})();
+const saveCfg=()=>LS.set('ag_cfg',cfg);
+let mode='sim',raw={hr:0,spo2:0,t:0},vit={hr:0,spo2:0},medH=[],medS=[],ppg=[],amp=0,nS=0,lp=0,hp=0,pv=0,lastArt=0,lastRx=Date.now(),buf='';
+let hist=LS.get('ag_hist',[]),acc={h:[],s:[],p:[]},minStart=Date.now(),t0=Date.now(),lowTest=false,dev=null,port=null,reader=null,ntk=0;
+const logL=[];function log(s){logL.push(s);if(logL.length>40)logL.shift();$('log').textContent=logL.join('\n')}
+function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(toast.i);toast.i=setTimeout(()=>t.style.opacity=0,3500);log('# '+m)}
+function openM(n){$('m'+n).classList.add('on');if(n==='Bud')renderBuddies();if(n==='Set')$('nm').value=cfg.name;if(n==='Bud'){$('hostIn').value=cfg.host||'';renderQR()}}
+function closeM(el){el.closest('.modal').classList.remove('on')}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')}));
+
+/* ---------- audio / vibration / GPS ---------- */
+let ac,alI,lastPos=null;
+function beep(f){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.value=.25;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.3)}catch(e){}}
+function alarm(on){clearInterval(alI);if(on){let n=0;alI=setInterval(()=>{beep(n++%2?660:880);navigator.vibrate&&navigator.vibrate([400,100,400])},700)}else navigator.vibrate&&navigator.vibrate(0)}
+function watchPos(){if(navigator.geolocation&&!watchPos.id)watchPos.id=navigator.geolocation.watchPosition(p=>lastPos={lat:p.coords.latitude,lon:p.coords.longitude,t:Date.now()},()=>{},{enableHighAccuracy:true,maximumAge:10000})}
+const getPos=()=>new Promise(r=>{if(lastPos&&Date.now()-lastPos.t<6e4||!navigator.geolocation)return r(lastPos);navigator.geolocation.getCurrentPosition(p=>r({lat:p.coords.latitude,lon:p.coords.longitude}),()=>r(lastPos),{timeout:4000})});
+document.addEventListener('pointerdown',()=>{try{ac=ac||new AudioContext();ac.resume()}catch(e){}watchPos();keepAwake()},{once:true});
+
+/* ---------- settings ---------- */
+function applyCfg(){document.documentElement.dataset.theme=cfg.theme;document.documentElement.style.fontSize=(16*cfg.scale)+'px';$('scl').textContent=Math.round(cfg.scale*100)+'%';$('thm').textContent=cfg.theme==='dark'?'☀ Light':'🌙 Dark';document.querySelector('meta[name=theme-color]').content=col('--bg');if(window.tr){[tr,dcc].forEach(c=>{for(const k in c.options.scales){const s=c.options.scales[k];s.ticks=Object.assign(s.ticks||{},{color:col('--mut')});if(s.grid&&s.grid.drawOnChart!==false)s.grid.color=col('--bd')+'66'}c.options.plugins.legend.labels.color=col('--fg')});drawTrend();if($('mDet').classList.contains('on'))dcc.update()}}
+function scl(d){cfg.scale=clamp(+(cfg.scale+d).toFixed(2),.8,1.6);saveCfg();applyCfg()}
+const SPEEDS=[1,6,12,30,60];let speed=1,vBase=Date.now(),rBase=Date.now();
+const vNow=()=>vBase+(Date.now()-rBase)*speed;
+const speedLabel=()=>'⏩ Demo speed: '+(speed===1?'1× (real time)':speed+'× (1 min = '+60/speed+' s, not saved)');
+function toggleFast(){const next=SPEEDS[(SPEEDS.indexOf(speed)+1)%SPEEDS.length];
+ vBase=next===1?Date.now():vNow();rBase=Date.now();
+ if(next===1)hist=LS.get('ag_hist',[]);
+ speed=next;acc={h:[],s:[],p:[]};minStart=Date.now();$('fastB').textContent=speedLabel();drawTrend()}
+const minMs=()=>60000/speed;
+
+/* ---------- signal chain ---------- */
+function onPPG(v){lp+=.4*(v-lp);hp=.97*(hp+lp-pv);pv=lp;const a=Math.abs(hp);nS++;
+ amp=nS<2?a:.995*amp+.005*(amp>0?Math.min(a,amp*4):a);ppg.push(hp);if(ppg.length>150)ppg.shift();acc.p.push(a)}
+const avg=(a,v,hard)=>{if(!v){a.m=(a.m||0)+1;if(hard||a.m>5||!a.length){a.length=0;a.m=0;return 0}}else{a.m=0;a.push(v);if(a.length>8)a.shift()}return Math.round(a.reduce((x,y)=>x+y,0)/a.length)}; /* 8 s moving average; short dropouts (<=5 s) keep the average */
+
+/* ---------- simulation engine ---------- */
+let ph=0,simHR=76,simS=97;
+function simStep(dt){ph+=2*Math.PI*(simHR/60)*dt;onPPG(500*(Math.sin(ph)+.35*Math.sin(2*ph+.6)+(Math.random()-.5)*.12))}
+function sim1s(){simHR=clamp(simHR+(Math.random()-.5)*3,62,98);const e=cfg.alt==='ext'?7:0;simS=lowTest?clamp(simS-1.2,e?70:78,99):clamp(simS+(Math.random()-.5)*.8+(simS<96-e?.4:0),94-e,99-e);raw={hr:Math.round(simHR+(Math.random()-.5)*2),spo2:Math.round(simS),t:Date.now()}}
+
+/* ---------- live engines ---------- */
+function onLine(l){l=l.trim();if(!l)return;if(l[0]==='#'){log(l);return}const p=l.split(',').map(Number);if(p.length!==3||p.some(isNaN))return;
+ lastRx=Date.now();if(p[0]>0)onPPG(p[0]);const h=p[1]>=30&&p[1]<=220?p[1]:0,s=p[2]>=50&&p[2]<=100?p[2]:0;raw={hr:h,spo2:s,t:Date.now()}}
+function onChunk(s){if(skip){const i=s.indexOf('\n');if(i<0)return;s=s.slice(i+1);skip=false}buf+=s;if(buf.length>2000)buf='';let i;while((i=buf.indexOf('\n'))>=0){onLine(buf.slice(0,i));buf=buf.slice(i+1)}}
+function setMode(m){mode=m;lp=hp=pv=nS=amp=0;ppg.length=0;medH.length=0;medS.length=0;vit={hr:0,spo2:0};buf='';skip=true;noSig=0;medH.m=medS.m=0;lastRx=Date.now();raw={hr:0,spo2:0,t:0};
+ $('cbtn').textContent=(m==='sim'?'🧪 Sim':m==='ble'?'📶 BLE':'🔌 USB')+(simLock?' 🔒':'');$('mCon').classList.remove('on');hardLost=false;linkLost=false;hideFB();connUI();keepAwake()}
+
+/* ---------- live links: open / tear down / reset ---------- */
+let gen=0,lastPort=null,lastDev=null,bleChar=null,bleH=null,serLoop=null,busy=false,retryT=0,nudgeT=0;
+const enc=new TextEncoder(),modeName=()=>mode==='sim'?'simulation':mode==='ble'?'Bluetooth':'USB';
+async function sendCmd(c){try{const b=enc.encode(c+'\n');
+ if(mode==='serial'&&port&&port.writable){const w=port.writable.getWriter();try{await w.write(b)}finally{w.releaseLock()}}
+ else if(mode==='ble'&&bleChar)await(bleChar.writeValueWithoutResponse?bleChar.writeValueWithoutResponse(b):bleChar.writeValue(b))}catch(e){log('# tx: '+e.message)}}
+async function teardown(){gen++;const d=dev,c=bleChar,h=bleH,p=port,r=reader,L=serLoop;dev=port=reader=bleChar=bleH=serLoop=null;buf='';
+ try{if(c){c.removeEventListener('characteristicvaluechanged',h);await c.stopNotifications()}}catch(e){}
+ try{d&&d.gatt&&d.gatt.connected&&d.gatt.disconnect()}catch(e){}
+ try{r&&await r.cancel()}catch(e){}try{L&&await L}catch(e){}try{p&&await p.close()}catch(e){}}
+async function serRun(p,g){const dec=new TextDecoder();let end=false;
+ while(p.readable&&g===gen&&!end){const r=p.readable.getReader();reader=r;
+  try{for(;;){const{value,done}=await r.read();if(done){end=true;break}if(g!==gen)break;onChunk(dec.decode(value,{stream:true}))}}
+  catch(e){log('# serial '+e.name)}finally{try{r.releaseLock()}catch(e){}}}
+ if(g===gen&&mode==='serial'){lost('USB lost');try{await p.close()}catch(e){}}}
+async function bleOpen(d){const g=++gen;d.addEventListener('gattserverdisconnected',()=>{if(g===gen&&mode==='ble')lost('Bluetooth lost')},{once:true});
+ const sv=await(await d.gatt.connect()).getPrimaryService(0xffe0),c=await sv.getCharacteristic(0xffe1),dec=new TextDecoder(),h=e=>{if(g===gen)onChunk(dec.decode(e.target.value,{stream:true}))};
+ await c.startNotifications();c.addEventListener('characteristicvaluechanged',h);dev=lastDev=d;bleChar=c;bleH=h}
+async function serOpen(p){await p.open({baudRate:115200,bufferSize:4096});port=lastPort=p;serLoop=serRun(p,gen)}
+const initDevice=async()=>{await sendCmd('r');await new Promise(r=>setTimeout(r,500));await sendCmd('A'+(cfg.alt==='ext'?1:0))};
+async function finishLive(kind,needReset,open,undo){const prev=mode;
+ await teardown();
+ try{await open()}catch(e){try{undo()}catch(x){}
+  toast((kind==='ble'?'BLE: ':'USB: ')+e.message+' – not connected, staying in '+modeName());if(prev!=='sim')lost('Reconnect failed');return}
+ if(needReset)resetAll();setMode(kind);toast(kind==='ble'?'Bluetooth connected':'USB connected');initDevice()}
+async function doBLE(needReset){if(!navigator.bluetooth)return toast('Web Bluetooth unavailable – use Chrome/Edge');let d;
+ try{d=await navigator.bluetooth.requestDevice({filters:[{services:[0xffe0]},{namePrefix:'BLE'},{namePrefix:'Nano'},{namePrefix:'HM'},{namePrefix:'BT'},{namePrefix:'Key'}],optionalServices:[0xffe0,0xdfb0,'6e400001-b5a3-f393-e0a9-e50e24dcca9e']})}
+ catch(e){return toast('BLE: '+e.message+' – staying in '+modeName())}
+ await finishLive('ble',needReset,()=>bleOpen(d),()=>d.gatt.disconnect())}
+async function doSer(needReset){if(!navigator.serial)return toast('Web Serial unavailable – use desktop Chrome/Edge');let p;
+ try{p=await navigator.serial.requestPort()}catch(e){return toast('USB: '+e.message+' – staying in '+modeName())}
+ await finishLive('serial',needReset,()=>serOpen(p),()=>p.close())}
+async function disc(){const m=mode;setMode('sim');await teardown();if(m!=='sim')toast('Simulation mode')}
+async function resetLink(quiet){if(mode==='sim')return quiet||toast('Nothing to reset in simulation');if(busy)return;busy=true;const k=mode,p=lastPort,d=lastDev;
+ try{quiet||toast('Resetting connection…');await teardown();hardLost=true;
+  if(k==='serial'){if(!p)throw new Error('no port yet');await serOpen(p)}else{if(!d)throw new Error('no device yet');await bleOpen(d)}
+  hardLost=false;skip=true;lastRx=Date.now();medH.length=medS.length=0;vit={hr:0,spo2:0};raw={hr:0,spo2:0,t:0};await initDevice();toast('Connection reset – buffers flushed')}
+ catch(e){lost('Reset failed ('+e.message+')')}finally{busy=false}}
+function autoRecover(){if(mode==='sim'||busy)return;const n=Date.now();
+ if(hardLost&&n-retryT>4000){retryT=n;resetLink(true)}           /* link dropped: keep re-opening the same device, never switch mode */
+ else if(!hardLost&&n-lastRx>5000&&n-nudgeT>10000){nudgeT=n;sendCmd('r')}}  /* link up but silent: ask firmware to restart */
+let simLock=false;
+function askReset(msg,fn){$('rstT').textContent=msg;$('rstY').onclick=()=>{$('mRst').classList.remove('on');fn()};$('mRst').classList.add('on')}
+function resetAll(){
+ noSig=0;medH.m=medS.m=0;hist=[];LS.set('ag_hist',[]);acc={h:[],s:[],p:[]};minStart=Date.now();vBase=rBase=Date.now();
+ lp=hp=pv=nS=amp=0;ppg.length=0;medH.length=0;medS.length=0;vit={hr:0,spo2:0};raw={hr:0,spo2:0,t:0};buf='';lastArt=0;lastRx=Date.now();
+ endGrace();lowSince=0;cool=0;$('em').classList.remove('on');alarm(false);
+ lowTest=false;$('testB').textContent='🫁 Simulate low SpO₂: off';simHR=76;simS=97;
+ $('mDet').classList.remove('on');hideFB();drawTrend();render();toast('Data reset')}
+function liveGate(withReset,noReset){
+ if(simLock)return toast('Locked to Simulation – unlock first');
+ if(mode!=='sim')return noReset();
+ askReset('Connecting to a live device clears all history, trends and alert state so the demo starts from a clean baseline.',withReset)}
+function connBLE(){if(!navigator.bluetooth)return toast('Web Bluetooth unavailable – use Chrome/Edge');liveGate(()=>doBLE(true),()=>doBLE(false))}
+function connSer(){if(!navigator.serial)return toast('Web Serial unavailable – use desktop Chrome/Edge');liveGate(()=>doSer(true),()=>doSer(false))}
+function userSim(){if(mode==='sim'){$('mCon').classList.remove('on');return}
+ askReset('Switching back to Simulation clears all history, trends and alert state.',async()=>{await disc();resetAll()})}
+function connUI(){[['bleB','ble'],['serB','serial'],['simB','sim']].forEach(([i,m])=>$(i).classList.toggle('act',mode===m))}
+function setLockUI(){$('lockB').textContent=(simLock?'🔒':'🔓')+' Lock to Simulation: '+(simLock?'ON':'off');$('bleB').disabled=$('serB').disabled=simLock;$('cbtn').textContent='🧪 Sim'+(simLock?' 🔒':'')}
+function toggleLock(){
+ if(simLock){simLock=false;setLockUI();toast('Simulation unlocked');return}
+ const on=()=>{simLock=true;setLockUI();toast('Locked to Simulation')};
+ if(mode==='sim')return on();
+ askReset('Locking to Simulation disconnects the device and clears all history, trends and alert state.',async()=>{await disc();resetAll();on()})}
+function hideFB(){$('fbB').style.display='none'}
+let linkLost=false,hardLost=false,linkMsg='';
+function setLink(ok,msg){if(mode==='sim')return;if(ok===!linkLost)return;linkLost=!ok;
+ $('cbtn').textContent=(mode==='ble'?'📶 BLE':'🔌 USB')+(linkLost?' ⚠':'')+(simLock?' 🔒':'');
+ if(linkLost){toast(msg+' - sensor disconnected');$('fbT').textContent='⚠ Sensor disconnected ('+msg+')';$('fbB').style.display='block'}else{hideFB();toast('Sensor data restored')}}
+function lost(msg){if(mode==='sim')return;hardLost=true;linkMsg=msg;setLink(false,msg)}
+
+/* ---------- 1-min aggregation ---------- */
+function closeMinute(){minStart=Date.now();
+ if(acc.h.length){const A=a=>a.reduce((x,y)=>x+y,0)/a.length,sA=A(acc.s);
+  hist.push({t:vNow(),h:Math.round(A(acc.h)),hh:Math.max(...acc.h),hl:Math.min(...acc.h),s:+sA.toFixed(1),sh:Math.max(...acc.s),sl:Math.min(...acc.s),p:acc.p.length?Math.round(A(acc.p)):0,lo:sA<th().warn?1:0});
+  if(hist.length>1440)hist.splice(0,hist.length-1440);if(speed===1)LS.set('ag_hist',hist);drawTrend()}
+ acc={h:[],s:[],p:[]}}
+
+/* ---------- charts ---------- */
+const sc=()=>({x:{ticks:{color:col('--mut'),maxTicksLimit:6},grid:{color:col('--bd')+'66'}}});
+const tr=new Chart($('trC'),{type:'line',data:{labels:[],datasets:[
+ {label:'HR',data:[],yAxisID:'yH',borderWidth:3,pointRadius:0,tension:.3},
+ {label:'SpO₂',data:[],yAxisID:'yS',borderWidth:3,pointRadius:0,tension:.3},
+ {label:'PPG amp',data:[],yAxisID:'yP',borderWidth:2,borderDash:[5,4],pointRadius:0,tension:.3}]},
+ options:{responsive:true,maintainAspectRatio:false,animation:false,scales:Object.assign(sc(),{yH:{position:'left',min:40,max:180,ticks:{color:col('--mut')}},yS:{position:'right',min:80,max:100,ticks:{color:col('--mut')},grid:{drawOnChart:false}},yP:{display:false}}),plugins:{legend:{labels:{color:col('--fg')}}}}});
+const dcc=new Chart($('dC'),{type:'line',data:{labels:[],datasets:[{label:'',data:[],fill:true,pointRadius:0,borderWidth:2,tension:.2}]},
+ options:{responsive:true,maintainAspectRatio:false,animation:false,scales:Object.assign(sc(),{y:{ticks:{color:col('--mut')}}}),plugins:{legend:{labels:{color:col('--fg')}}}}});
+function drawTrend(){const r=hist.slice(-30);tr.data.labels=r.map(x=>hm(x.t));tr.data.datasets[0].data=r.map(x=>x.h);tr.data.datasets[1].data=r.map(x=>x.s);tr.data.datasets[2].data=r.map(x=>x.p);
+ tr.data.datasets.forEach((d,i)=>d.borderColor=col(['--hr','--acc','--warn'][i]));tr.update()}
+function openDet(k){const hr=k==='hr',v=hist.map(r=>hr?r.h:r.s),H=hist.map(r=>hr?r.hh:r.sh),L=hist.map(r=>hr?r.hl:r.sl),n=v.length,u=hr?'':'%';let hi=-1,lo=-1;
+ H.forEach((x,i)=>{if(hi<0||x>H[hi])hi=i});L.forEach((x,i)=>{if(lo<0||x<L[lo])lo=i});
+ $('dT').textContent=(hr?'❤ Heart Rate':'💧 Blood Oxygen')+' · last 24 h';
+ $('dAvg').textContent=n?(v.reduce((a,b)=>a+b,0)/n).toFixed(hr?0:1)+u:'--';
+ $('dHi').innerHTML=n?`${H[hi]}${u}<br><small>${hm(hist[hi].t)}</small>`:'--';$('dLo').innerHTML=n?`${L[lo]}${u}<br><small>${hm(hist[lo].t)}</small>`:'--';
+ $('dLowL').textContent='LOW SpO₂ <'+th().warn+'%';$('dMin').textContent=n+' min';$('dLow').textContent=hist.reduce((a,r)=>a+r.lo,0)+' min';
+ const c=col(hr?'--hr':'--acc');dcc.data.labels=hist.map(r=>hm(r.t));Object.assign(dcc.data.datasets[0],{data:v,label:hr?'BPM (1-min avg)':'SpO₂ % (1-min avg)',borderColor:c,backgroundColor:c+'22'});dcc.update();$('mDet').classList.add('on')}
+
+/* ---------- render ---------- */
+function drawPPG(){const cv=$('ppgC'),cx=cv.getContext('2d'),w=cv.width=cv.clientWidth,h=cv.height=cv.clientHeight;cx.clearRect(0,0,w,h);
+ const gx=w*25/149;cx.lineWidth=1;cx.strokeStyle=col('--mut')+'40';cx.beginPath();for(let x=w;x>0;x-=gx){cx.moveTo(x,0);cx.lineTo(x,h)}for(let k=1;k<4;k++){cx.moveTo(0,h*k/4);cx.lineTo(w,h*k/4)}cx.stroke();
+ cx.strokeStyle=col('--mut')+'90';cx.beginPath();cx.moveTo(0,h/2);cx.lineTo(w,h/2);cx.moveTo(w-gx,h-14);cx.lineTo(w-gx,h-6);cx.moveTo(w-gx,h-10);cx.lineTo(w,h-10);cx.moveTo(w,h-14);cx.lineTo(w,h-6);cx.stroke();
+ cx.fillStyle=col('--mut');cx.font='11px system-ui';cx.textAlign='center';cx.fillText('1 s',w-gx/2,h-14);cx.textAlign='left';if(ppg.length<2)return;
+ cx.lineWidth=3;cx.strokeStyle=col('--acc');cx.beginPath();const k=h*.38/Math.max(amp*2.5,1);ppg.forEach((v,i)=>{const x=i*w/149,y=h/2-v*k;i?cx.lineTo(x,y):cx.moveTo(x,y)});cx.stroke()}
+const SHIELD='<svg width="34" height="38" viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1 2 5v7c0 6.2 4.2 11.2 10 13 5.8-1.8 10-6.8 10-13V5z" fill="#22c55e"/><path d="m7.5 13 3.2 3.2L16.8 10" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function render(){if(document.hidden)return;const{hr,spo2}=vit,T=th();$('hv').textContent=hr||'--';$('sv').textContent=spo2||'--';let c,i,t,d,sigIssue=false;
+ if(!hr&&!spo2){const q=noSig?Math.floor((Date.now()-noSig)/1000):0;if(q>=15){sigIssue=true;c='warn';i='📡';t='Signal issue';d='No reliable reading for 15 s. Check sensor fit or the connection, or just keep waiting. Changing source is optional.'}else{c='warn';i='🖐';t='No signal';d='Searching for pulse… '+q+' s (10 s warm-up, readings are averaged)'}}
+ else if(spo2&&spo2<T.crit){c='bad';i='⚠';t='CRITICAL: SpO₂ < '+T.crit+'%';d='Stop, descend, get help now'}
+ else if(spo2&&spo2<T.warn){c='bad';i='⚠';t='LOW: SpO₂ < '+T.warn+'%';d='Rest and breathe deeply'}
+ else{c='ok';i='🛡';t='Status: OK';d=cfg.alt==='ext'?'Vitals stable · extreme-altitude limits':'Vitals stable'}
+ $('ban').style.borderColor=`var(--${c})`;$('banI').innerHTML=i==='🛡'?SHIELD:i;$('banT').textContent=t;$('banT').style.color=`var(--${c})`;$('banD').textContent=d;$('banB').style.display=sigIssue?'inline-flex':'none';
+ const lost=linkLost&&mode!=='sim',pc=lost?'bad':c,pt=lost?'Sensor lost':t;$('pill').className='pill '+pc;$('pillT').textContent=(mode==='sim'?'':mode==='ble'?'📶 ':'🔌 ')+(pc==='ok'?'OK':pt);
+ const st=$('strip');st.style.display=c==='bad'&&!lost?'block':'none';st.textContent=i+' '+t+' · '+d}
+
+/* ---------- safety ---------- */
+let grace=0,lowSince=0,cool=0,graceI;
+function startGrace(){grace=Date.now()+10000;$('gS').textContent=vit.spo2;$('graceT').textContent=vit.spo2<th().crit?'CRITICAL LOW OXYGEN':'Low oxygen detected';$('gC').textContent=10;$('grace').classList.add('on');if(cfg.group||peers.size)pubMe();
+ graceI=setInterval(()=>{const left=Math.ceil((grace-Date.now())/1000);$('gC').textContent=Math.max(left,0);beep(1000);navigator.vibrate&&navigator.vibrate(200);if(left<=0){endGrace();cool=Date.now()+120000;sendAlert('lowspo2')}},1000)}
+function endGrace(){clearInterval(graceI);grace=0;$('grace').classList.remove('on')}
+function imOk(){endGrace();cool=Date.now()+60000;lowSince=0;okAt=Date.now();if(cfg.group||peers.size)pubMe()}
+function alertLogic(){const s=vit.spo2,now=Date.now();if(grace){if(s>=th().warn+2)endGrace();return}if(now<cool)return;
+ if(s&&s<th().warn){lowSince=lowSince||now;if(now-lowSince>=5000)startGrace()}else lowSince=0}
+async function sendAlert(kind){const p=await getPos(),a={id:myId+Date.now().toString(36),mid:myId,name:cfg.name,kind,hr:vit.hr,spo2:vit.spo2,lat:p?p.lat:null,lon:p?p.lon:null,t:Date.now()};
+ showEmergency(a,true);ingest({id:a.id,ttl:6,k:'a',d:a},'local')}
+function showEmergency(a,own){$('emT').textContent=own?'SOS SENT':'EMERGENCY';$('emN').textContent=String(a.name||'Skier').slice(0,30);
+ $('emK').textContent=a.kind==='sos'?'Manual SOS':'Low blood oxygen';$('emV').textContent=`HR ${+a.hr||'--'} bpm · SpO₂ ${+a.spo2||'--'}%`;
+ $('emG').innerHTML=isFinite(a.lat)&&a.lat!==null&&isFinite(a.lon)?`<a href="https://maps.google.com/?q=${+a.lat},${+a.lon}" target="_blank" rel="noopener">📍 ${(+a.lat).toFixed(5)}, ${(+a.lon).toFixed(5)}</a>`:'📍 GPS unavailable';
+ $('emW').textContent=new Date(a.t||Date.now()).toLocaleTimeString();$('em').classList.add('on');alarm(true)}
+const sb=$('sos'),sbar=$('sosB');let sosT;
+const sosStop=()=>{clearTimeout(sosT);sbar.style.transition='none';sbar.style.width='0'};
+sb.addEventListener('pointerdown',e=>{e.preventDefault();sosStop();sbar.style.transition='width 1.5s linear';sbar.style.width='100%';sosT=setTimeout(()=>{sosStop();sendAlert('sos')},1500)});
+['pointerup','pointerleave','pointercancel'].forEach(n=>sb.addEventListener(n,sosStop));sb.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ---------- hybrid networking ---------- */
+let es=null,cloud={},seen=new Set(),peers=new Map(),members={},pend=null;
+const fbBase=()=>cfg.fb.replace(/\/$/,'');
+function cloudStop(){es&&es.close();es=null}
+function cloudStart(){cloudStop();cloud={};if(!/^https:\/\//.test(cfg.fb)||!cfg.group)return;
+ try{es=new EventSource(`${fbBase()}/groups/${cfg.group}.json`);['put','patch'].forEach(ev=>es.addEventListener(ev,e=>{try{const m=JSON.parse(e.data);cloudApply(m.path,m.data,ev)}catch(x){}}))}catch(e){}}
+function cloudApply(path,data,ev){const k=path.split('/').filter(Boolean);
+ if(!k.length)cloud=ev==='patch'?Object.assign(cloud||{},data):(data||{});
+ else{let o=cloud;for(let i=0;i<k.length-1;i++)o=o[k[i]]=o[k[i]]||{};const l=k[k.length-1];if(data===null)delete o[l];else o[l]=ev==='patch'&&typeof data==='object'?Object.assign(o[l]||{},data):data}
+ const ms=cloud.members||{},as=cloud.alerts||{};
+ for(const id in ms)if(id!==myId&&ms[id])ingest({id:id+'@'+ms[id].t,ttl:3,k:'m',d:Object.assign({},ms[id],{id})},'cloud');
+ for(const id in as)if(as[id])ingest({id,ttl:6,k:'a',d:as[id]},'cloud')}
+function cloudPush(m){if(!/^https:\/\//.test(cfg.fb)||!cfg.group)return;const d=m.d;
+ fetch(`${fbBase()}/groups/${cfg.group}/${m.k==='m'?'members':'alerts'}/${d.id}.json`,{method:'PUT',body:JSON.stringify(d)}).catch(()=>{})}
+function ingest(m,src){if(!m||!m.id||typeof m.id!=='string'||seen.has(m.id))return;seen.add(m.id);if(seen.size>800)seen.delete(seen.values().next().value);const d=m.d||{};
+ if(m.k==='m'){if(d.id&&d.id!==myId&&Date.now()-(+d.t||0)<36e5)members[d.id]=Object.assign({},d,{rx:Date.now()})}
+ else if(m.k==='a'&&d.mid!==myId&&Date.now()-d.t<3e5){sosAt[d.mid]=d.t;showEmergency(d)}
+ if(src!=='cloud')cloudPush(m);
+ if(m.ttl>0)peers.forEach((p,pid)=>{if(pid!==src&&p.dc.readyState==='open')try{p.dc.send(JSON.stringify({id:m.id,k:m.k,d:m.d,ttl:m.ttl-1}))}catch(e){}})}
+function pubMe(){if(cfg.role==='g')return;const now=Date.now();ingest({id:myId+'@'+now,ttl:3,k:'m',d:{id:myId,name:cfg.name,hr:vit.hr,spo2:vit.spo2,src:mode,alt:cfg.alt,ok:okAt,t:now,lat:lastPos?lastPos.lat:null,lon:lastPos?lastPos.lon:null}},'local')}
+function normFb(v){v=String(v).trim();const m=v.match(/^(https:\/\/[^\/?#]+)\/groups\/([A-Za-z0-9_-]+)/),f=cleanFb(m?m[1]:v);if(m&&f){$('gc').value=m[2].slice(0,24).toUpperCase()}return f}
+function openJoin(code,fb){$('jn').value=cfg.name&&cfg.name!=='Skier'?cfg.name:'';$('gc').value=code!=null?code:cfg.group;$('fb').value=fb||cfg.fb||DEFAULT_FB;
+ $('mBud').classList.remove('on');$('mJoin').classList.add('on');setTimeout(()=>$('jn').focus(),60)}
+function joinG(){const n=$('jn').value.trim().slice(0,20),f=normFb($('fb').value),g=$('gc').value.replace(/[^A-Za-z0-9_-]/g,'').slice(0,24).toUpperCase();
+ if(!n)return toast('Enter your name');if(!g)return toast('Enter a group name / code');
+ if(!f)return toast('Firebase link must be your Realtime Database URL, like https://xxx-default-rtdb.region.firebasedatabase.app');
+ cfg.fb=f;cfg.name=n;cfg.group=g;$('nm').value=n;saveCfg();warned={};$('mJoin').classList.remove('on');watchPos();cloudStart();renderQR();pubMe();renderBuddies();toast('Joined group '+g+' as '+n)}
+function setHost(v){cfg.host=v.trim();saveCfg();renderQR()}
+/* base address for join links: the host box if filled, else the page's own origin+path (never hardcoded localhost) */
+function hostBase(){const h=(cfg.host||'').trim(),web=/^https?:/.test(location.protocol);
+ if(!h)return web?location.origin+location.pathname:'';
+ try{const u=new URL(/^https?:\/\//.test(h)?h:'http://'+h);if(u.pathname==='/'){const fn=location.pathname.split('/').pop();if(web)u.pathname=location.pathname;else if(/\.html?$/i.test(fn))u.pathname='/'+fn}return u.origin+u.pathname}catch(e){return''}}
+function joinUrl(){const b=hostBase();return b&&cfg.group?b+'#join='+encodeURIComponent(cfg.group)+'&fb='+encodeURIComponent(fbBase()):''}  /* '' when no web address is known: the raw database URL is NEVER used as a link */
+function renderQR(){const b=$('qrBox'),c=$('qrC');$('gInfo').textContent=cfg.group?'In group '+cfg.group+' as '+cfg.name:'Not in a group';if(!cfg.group||!/^https:\/\//.test(cfg.fb)){b.style.display='none';return}
+ const u=joinUrl();$('qrU').textContent=u||'No web address yet. Type the Host / Server URL above (e.g. https://yourname.github.io/skisense/), or open this page from its http/https address instead of a file.';b.style.display='block';if(!u||!window.qrcode){c.style.display='none';return}
+ try{const q=qrcode(0,'M');q.addData(u);q.make();const n=q.getModuleCount(),z=Math.max(3,Math.floor(240/(n+8))),w=(n+8)*z,x=c.getContext('2d');c.width=c.height=w;c.style.display='block';x.fillStyle='#fff';x.fillRect(0,0,w,w);x.fillStyle='#000';
+  for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+4)*z,(r+4)*z,z,z)}catch(e){c.style.display='none'}}
+function leaveG(){warned={};sosAt={};cfg.group='';saveCfg();cloudStop();members={};renderBuddies();renderQR();toast('Left group')}
+const TH_OF=x=>x==='ext'?TH.ext:TH.low;
+/* risk rank: 0 OK, 1 no signal, 2 offline, 3 low O2, 4 critical, 5 SOS. Each skier is judged by THEIR OWN altitude setting. */
+function memStat(m){const now=Date.now(),T=TH_OF(m.alt),age=Math.max(0,Math.round((now-(+m.t||m.rx))/1000)),s=+m.spo2,ok=m.ok&&now-m.ok<12e4?' · said OK':'';
+ if(sosAt[m.id]&&now-sosAt[m.id]<12e4)return{c:'bad',t:'🆘 SOS ALERT',r:5,age};
+ if(age>60)return{c:'warn',t:'⚠ OFFLINE',r:2,age};
+ if(s&&s<T.crit)return{c:'bad',t:'🆘 CRITICAL'+ok,r:4,age};
+ if(s&&s<T.warn)return{c:'bad',t:'⚠ LOW O₂'+ok,r:3,age};
+ if(!s)return{c:'warn',t:'🖐 No signal',r:1,age};
+ return{c:'ok',t:'✅ OK',r:0,age}}
+function buddyHTML(m){const st=memStat(m),gps=isFinite(m.lat)&&m.lat!==null,ago=st.age<60?st.age+'s ago':Math.round(st.age/60)+' min ago';
+ return `<div class="card bd flex justify-between items-center" style="border-color:var(--${st.c})"><div><b>${esc(m.name||'Skier')}</b>${m.src==='sim'?' <span class="mut text-xs">(SIM)</span>':''}${m.alt==='ext'?' <span class="mut text-xs">🏔</span>':''}<div class="text-sm font-bold" style="color:var(--${st.c})">${st.t}</div><div class="mut text-xs">${ago}${gps?` · <a href="https://maps.google.com/?q=${+m.lat},${+m.lon}" target="_blank" rel="noopener" style="text-decoration:underline">📍 map</a>`:''}</div></div><div class="text-right"><b style="font-size:1.8rem;color:var(--${st.c})">${+m.spo2||'--'}%</b><div class="mut">${+m.hr||'--'} bpm</div></div></div>`}
+function renderBuddies(){const now=Date.now();for(const k in members)if(now-(+members[k].t||members[k].rx)>36e5){delete members[k];delete warned[k]}
+ const a=Object.values(members).sort((x,y)=>memStat(y).r-memStat(x).r),h=a.map(buddyHTML).join(''),g=cfg.role==='g';
+ $('bl').innerHTML=g?'<p class="mut text-sm">Group list is on the main screen.</p>':(h||'<p class="mut text-sm">No buddies yet. Join a group code or link a mesh peer.</p>');
+ if(!g)return;const r=a.map(m=>memStat(m).r);
+ $('wl').innerHTML=h||'<div class="card mut text-sm">No skiers yet. Open 🧑‍🤝‍🧑, enter the same group code and Firebase URL as your skiers, then Join.</div>';
+ $('wn').textContent=a.length;$('wOk').textContent=r.filter(x=>x===0).length;$('wWa').textContent=r.filter(x=>x===1||x===2).length;$('wBa').textContent=r.filter(x=>x>=3).length;
+ $('wg').textContent=cfg.group?'Group '+cfg.group+' · '+(!cfg.fb?'no cloud URL':es&&es.readyState===1?'cloud live':'cloud connecting…'):(peers.size?'Mesh only':'Not in a group')}
+/* coach alarm only when a skier's state gets worse (rank >= 2 and changed) */
+function watchCheck(){for(const id in members){const m=members[id],st=memStat(m);
+ if(!(id in warned))warned[id]=st.r===2?2:0;
+ if(st.r>=2&&st.r>warned[id]){toast((m.name||'Skier')+': '+st.t);beep(880);setTimeout(()=>beep(660),350);setTimeout(()=>beep(880),700);navigator.vibrate&&navigator.vibrate([300,100,300,100,300])}
+ warned[id]=st.r}}
+function applyRole(){const g=cfg.role==='g';$('roleB').textContent=g?'👀 Role: Coach / Parent (tap to switch)':'🎿 Role: Skier (tap to switch)';
+ $('watch').style.display=g?'':'none';$('me').style.display=g?'none':'';if(g){endGrace();hideFB();keepAwake()}renderBuddies()}
+function toggleRole(){cfg.role=cfg.role==='g'?'s':'g';saveCfg();warned={};applyRole();if(cfg.role==='s'&&cfg.group)pubMe();toast(cfg.role==='g'?'Coach / Parent mode: watching group':'Skier mode: sharing your vitals')}
+const newPC=()=>new RTCPeerConnection({iceServers:[]});
+const gathered=pc=>new Promise(r=>{if(pc.iceGatheringState==='complete')return r();pc.addEventListener('icegatheringstatechange',()=>pc.iceGatheringState==='complete'&&r());setTimeout(r,3000)});
+function wire(pid,dc){dc.onopen=()=>{peers.set(pid,{dc});toast('Mesh peer linked');pubMe()};dc.onclose=()=>peers.delete(pid);dc.onmessage=e=>{try{ingest(JSON.parse(e.data),pid)}catch(x){}}}
+const rid=()=>'p'+Math.random().toString(36).slice(2,6);
+async function p2pOffer(){if(!window.RTCPeerConnection)return toast('WebRTC unavailable');const pc=newPC();wire(rid(),pc.createDataChannel('m'));await pc.setLocalDescription(await pc.createOffer());await gathered(pc);pend=pc;$('sdp').value=btoa(JSON.stringify(pc.localDescription));toast('Invite ready – send it to your buddy')}
+async function p2pAccept(){try{const d=JSON.parse(atob($('sdp').value.trim()));
+ if(d.type==='offer'){const pc=newPC(),pid=rid();pc.ondatachannel=e=>wire(pid,e.channel);await pc.setRemoteDescription(d);await pc.setLocalDescription(await pc.createAnswer());await gathered(pc);$('sdp').value=btoa(JSON.stringify(pc.localDescription));toast('Answer ready – send it back')}
+ else if(d.type==='answer'&&pend){await pend.setRemoteDescription(d);pend=null;toast('Linking…')}}catch(e){toast('Invalid code')}}
+const netStat=()=>$('net').textContent=(cfg.fb&&cfg.group?(es&&es.readyState===1?'☁ live':'☁ …'):'☁ off')+' · 📡 '+peers.size+(cfg.role==='g'?' · 👀':'');
+
+/* ---------- main loops ---------- */
+function tick1s(){
+ if(mode==='sim')sim1s();else{const ok=!hardLost&&Date.now()-lastRx<=5000;setLink(ok,hardLost?linkMsg:'No data for 5 s')}
+ const stale=mode!=='sim'&&Date.now()-raw.t>3000;
+ vit.hr=avg(medH,raw.hr,stale);vit.spo2=avg(medS,raw.spo2,stale);
+ if(linkLost){vit.hr=vit.spo2=0;medH.length=medS.length=0}
+ if(linkLost||vit.hr||vit.spo2)noSig=0;else noSig=noSig||Date.now();autoRecover();
+ if(cfg.role!=='g'&&vit.hr&&vit.spo2){acc.h.push(vit.hr);acc.s.push(vit.spo2)}
+ render();if(cfg.role!=='g')alertLogic();if(Date.now()-minStart>=minMs())closeMinute();
+ if((cfg.group||peers.size)&&++ntk%5===0)pubMe();
+ const s=Date.now()-t0;$('up').textContent=pad(s/36e5|0)+':'+pad(s/6e4%60|0)+':'+pad(s/1e3%60|0);netStat();if(cfg.role==='g'||$('mBud').classList.contains('on'))renderBuddies();if(cfg.role==='g')watchCheck()}
+applyCfg();altUI();drawTrend();$('nm').value=cfg.name;applyRole();connUI();
+setInterval(tick1s,1000);setInterval(()=>{if(mode==='sim')simStep(.04);if(!document.hidden)drawPPG()},40);
+{const h=new URLSearchParams(location.hash.slice(1)),g=h.get('join');if(g){const f=h.get('fb');history.replaceState(null,'',location.pathname+location.search);
+ setTimeout(()=>openJoin(g.replace(/[^A-Za-z0-9_-]/g,'').slice(0,24).toUpperCase(),cleanFb(f||'')||cfg.fb),400)}}
+if(cfg.group)cloudStart();
+</script>
+</body>
+</html>
