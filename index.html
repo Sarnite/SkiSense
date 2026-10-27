@@ -74,15 +74,15 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
 </head>
 <body>
 <header class="sticky top-0 z-30 px-3 py-2" style="background:var(--bg);border-bottom:1px solid var(--bd)">
- <div class="max-w-md mx-auto flex flex-wrap items-center justify-between gap-2"><div><b style="font-size:1.25rem;letter-spacing:-.02em;white-space:nowrap">Ski<span style="color:var(--acc)">Sense</span></b><div class="mut text-xs" style="white-space:nowrap"><span id="up">00:00:00</span> · <span id="net">Cloud off</span></div></div>
-  <div class="flex gap-2"><button class="btn" onclick="openM('Bud')" aria-label="Ski Buddies">Group</button><button class="btn" onclick="openM('Set')" aria-label="Settings">Settings</button><button id="cbtn" class="btn pri" onclick="openM('Con')">Sim</button></div>
+ <div class="max-w-md mx-auto flex flex-wrap items-center justify-between gap-2"><div><div class="flex items-center gap-2"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" style="flex:none"><rect width="32" height="32" rx="8" fill="#0e2a4a"/><path d="M3 24 11 12l5 7 4-5 9 10z" fill="#22d3ee" opacity=".9"/><path d="M3 17h7l2-5 3 9 2-6h3l1.5-2 1.5 4H29" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-size:1.25rem;letter-spacing:-.02em;white-space:nowrap">Ski<span style="color:var(--acc)">Sense</span></b></div><div class="mut text-xs" style="white-space:nowrap"><span id="up">00:00:00</span> · <span id="net">Cloud off</span></div></div>
+  <div class="flex gap-2"><button class="btn" onclick="openM('Bud')" aria-label="Buddies">Buddies 🧑‍🤝‍🧑</button><button class="btn" onclick="openM('Set')" aria-label="Settings">⚙️ Settings</button><button id="cbtn" class="btn pri" onclick="openM('Con')">Sim</button></div>
   <button id="pill" class="pill ok" style="display:none"><i class="dot"></i><span id="pShieldW"></span><span id="pillT">Starting…</span></button></div>
  <div id="strip"></div>
 </header>
 <main class="max-w-md mx-auto p-3 space-y-4 pb-10">
  <div id="watch" class="space-y-3" style="display:none">
   <div class="card">
-   <div class="flex justify-between items-center"><div><b>Group watch</b><div id="wg" class="mut text-sm">Not in a group</div></div><b style="font-size:1.6rem"><span id="wn">0</span></b></div>
+   <div class="flex justify-between items-center"><div><b>Buddies 🧑‍🤝‍🧑 watch</b><div id="wg" class="mut text-sm">Not in Buddies</div></div><b style="font-size:1.6rem"><span id="wn">0</span></b></div>
    <div class="grid grid-cols-3 gap-2 text-center mt-3">
     <div class="card mini"><div class="mut text-xs">OK</div><b id="wOk" style="font-size:1.4rem;color:var(--ok)">0</b></div>
     <div class="card mini"><div class="mut text-xs">CHECK</div><b id="wWa" style="font-size:1.4rem;color:var(--warn)">0</b></div>
@@ -99,7 +99,7 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
   <button class="card text-left" onclick="openDet('hr')"><div class="lbl" style="color:var(--hr)">Heart rate</div><div><span id="hv" class="num">--</span><span id="ht" class="tr"></span> <span class="mut text-sm">BPM</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
   <button class="card text-left" onclick="openDet('sp')"><div class="lbl" style="color:var(--acc)">SpO₂ (Blood Oxygen)</div><div><span id="sv" class="num">--</span><span id="st" class="tr"></span> <span class="mut text-sm">%</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
  </div>
- <div class="card"><div class="lbl mb-2">Live PPG <span class="mut font-normal">(filtered, ~25 Hz)</span></div><div style="height:8rem"><canvas id="ppgC" style="width:100%;height:100%"></canvas></div></div>
+ <div class="card"><div class="lbl mb-2">Live PPG <span class="mut font-normal" style="text-transform:none;letter-spacing:0">(filtered, ~25 Hz)</span></div><div style="height:10rem"><canvas id="ppgC" style="width:100%;height:100%"></canvas></div></div>
  <div class="card"><div class="lbl mb-2">30-min trend <span class="mut font-normal">(1-min averages)</span></div><div style="height:12rem"><canvas id="trC"></canvas></div></div>
  <button id="sos" class="btn" style="margin-top:3.5rem;margin-bottom:2rem;width:100%;min-height:6.5rem;background:#d91e3a;color:#fff;border-color:#d91e3a;position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-size:1.5rem;font-weight:900;letter-spacing:.02em"><span id="sosB" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#0007"></span><span style="position:relative">HOLD 1.5 s FOR SOS</span></button>
  </div>
@@ -111,8 +111,8 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
 <div id="fbB" class="card space-y-2" style="display:none;position:fixed;top:calc(5.5rem + env(safe-area-inset-top,0px));left:.5rem;right:.5rem;z-index:45;max-width:28rem;margin:auto"><button class="xb ab" onclick="hideFB()" aria-label="Close">✕</button><b id="fbT" style="display:block;padding-right:3.5rem"></b><div class="mut text-sm">Staying in live mode - no simulated data is shown. Vitals read -- until the sensor is back.</div><button class="btn pri" onclick="openM('Con')">Reconnect / change source</button><button class="btn" onclick="resetLink()">Reset connection</button></div>
 
 <div class="modal" id="mCon"><div class="sheet"><div class="mh"><b>Data source</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
- <button id="bleB" class="btn" onclick="connBLE()">Bluetooth (BLE-Nano)</button>
- <button id="serB" class="btn" onclick="connSer()">USB Serial (115200)</button>
+ <button id="bleB" class="btn" onclick="connBLE()">📶 Bluetooth (BLE-Nano)</button>
+ <button id="serB" class="btn" onclick="connSer()">🔌 Wired (USB Serial, 115200)</button>
  <button id="simB" class="btn" onclick="userSim()">Simulation</button>
  <button class="btn" onclick="resetLink()">Reset connection (flush buffers)</button>
  <button class="btn" onclick="closeM(this)">Close</button></div></div>
@@ -136,20 +136,20 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
  <button id="rstY" class="btn pri">Clear &amp; continue</button>
  <button class="btn" onclick="closeM(this)">Cancel</button></div></div>
 
-<div class="modal" id="mBud"><div class="sheet"><div class="mh"><b>Ski Buddies</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
+<div class="modal" id="mBud"><div class="sheet"><div class="mh"><b>Buddies 🧑‍🤝‍🧑</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
 <button id="roleB" class="btn pri" onclick="toggleRole()">Role: Skier (tap to switch)</button>
- <p class="mut text-xs">Skier = shares your vitals. Coach / Parent = watches the whole group and shares nothing.</p>
- <div id="gBadge"><div class="flex-1"><div class="mut text-xs">YOU ARE IN GROUP</div><b id="gBadgeT" style="font-size:1.4rem;letter-spacing:.06em"></b></div><button class="btn" onclick="leaveG()">Leave</button></div>
- <div id="gBtns" class="grid gap-2"><button class="btn pri" onclick="openJoin('',null,true)">+ Create Group</button><button class="btn" onclick="openJoin()">+ Join Group</button></div>
- <div id="qrBox" class="card text-center" style="display:none"><canvas id="qrC" style="margin:0 auto;background:#fff;border-radius:.5rem;max-width:100%"></canvas><div class="text-sm font-bold mt-2">Scan to join this group</div>
+ <p class="mut text-xs">Skier = shares your vitals. Coach / Parent = watches all your Buddies and shares nothing.</p>
+ <div id="gBadge"><div class="flex-1"><div class="mut text-xs">YOU ARE IN BUDDIES</div><b id="gBadgeT" style="font-size:1.4rem;letter-spacing:.06em"></b></div><button class="btn" onclick="leaveG()">Leave</button></div>
+ <div id="gBtns" class="grid gap-2"><button class="btn pri" onclick="openJoin('',null,true)">+ Create Buddies</button><button class="btn" onclick="openJoin()">+ Join Buddies</button></div>
+ <div id="qrBox" class="card text-center" style="display:none"><canvas id="qrC" style="margin:0 auto;background:#fff;border-radius:.5rem;max-width:100%"></canvas><div class="text-sm font-bold mt-2">Scan to join these Buddies</div>
   <label class="mut text-xs block text-left mt-2">Host / Server URL (the address other phones can reach)<input type="text" id="hostIn" placeholder="auto: this page's address" oninput="setHost(this.value)"></label>
   <div id="qrU" class="mut text-xs mt-2" style="word-break:break-all"></div><button class="btn mt-2" onclick="joinUrl()&&navigator.clipboard&&navigator.clipboard.writeText(joinUrl())">Copy join link</button></div>
  <div id="bl" class="grid gap-2"></div>
  <button class="btn" onclick="closeM(this)">Close</button></div></div>
 
-<div class="modal" id="mJoin"><div class="sheet"><div class="mh"><b id="jT">➕ Join Group</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
+<div class="modal" id="mJoin"><div class="sheet"><div class="mh"><b id="jT">Join Buddies</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
  <p class="mut text-sm" id="jP"></p>
- <label class="mut text-sm">Group code<input type="text" id="gc" maxlength="24" placeholder="e.g. 0ZBG21" autocomplete="off" autocapitalize="characters"></label>
+ <label class="mut text-sm">Buddies code<input type="text" id="gc" maxlength="24" placeholder="e.g. 0ZBG21" autocomplete="off" autocapitalize="characters"></label>
  <details><summary class="btn">Database link (advanced)</summary><label class="mut text-sm block mt-2">Firebase DB link<input type="text" id="fb" placeholder="https://xxx.firebasedatabase.app" autocomplete="off"></label></details>
  <button id="jGo" class="btn pri" onclick="joinG()">Join</button>
  <button class="btn" onclick="closeM(this)">Cancel</button></div></div>
@@ -234,8 +234,10 @@ function pushTr(a,v){if(!v){a.length=0;return}a.push(v);if(a.length>20)a.shift()
 function trendOf(a,t){if(a.length<12)return 0;const h=a.length>>1,m=x=>x.reduce((p,q)=>p+q,0)/x.length,d=m(a.slice(h))-m(a.slice(0,h));return d>=t?1:d<=-t?-1:2}
 function showTr(el,k,cUp,cDn){const g=['','↑','↓','→'][k===2?3:k===1?1:k===-1?2:0];el.textContent=g;el.style.color=k===1?cUp:k===-1?cDn:'var(--mut)'}
 /* ---------- signal chain ---------- */
-function onPPG(v){lp+=.4*(v-lp);hp=.97*(hp+lp-pv);pv=lp;const a=Math.abs(hp);nS++;
- amp=nS<2?a:.995*amp+.005*(amp>0?Math.min(a,amp*4):a);ppg.push(hp);if(ppg.length>150)ppg.shift();acc.p.push(a)}
+const PPG_HZ=25,PPG_N=96;   /* 25 Hz like the firmware stream; 96 points = exactly one OLED screen (96 columns, 3.84 s) */
+function pushPPG(v){const a=Math.abs(v);nS++;amp=nS<2?a:.995*amp+.005*(amp>0?Math.min(a,amp*4):a);ppg.push(v);if(ppg.length>PPG_N)ppg.shift();acc.p.push(a);normUpdate()}
+/* simulation and old 3-field firmware: filter here. v11 firmware sends the already-filtered sample as a 4th field and it is used as-is. */
+function onPPG(v){lp+=.4*(v-lp);hp=.97*(hp+lp-pv);pv=lp;pushPPG(hp)}
 const avg=(a,v,hard)=>{if(!v){a.m=(a.m||0)+1;if(hard||a.m>5||!a.length){a.length=0;a.m=0;return 0}}else{a.m=0;a.push(v);if(a.length>8)a.shift()}return Math.round(a.reduce((x,y)=>x+y,0)/a.length)}; /* 8 s moving average; short dropouts (<=5 s) keep the average */
 
 /* ---------- simulation engine ---------- */
@@ -253,12 +255,13 @@ function toggleSim(k){if(k==='low')lowTest=!lowTest;else{cardTest=!cardTest;card
  toast(simOn()?'Simulation ON'+(mode==='sim'?'':' (shown on the sensor OLED too)'):'Simulation off, back to live data')}
 function simUI(){$('testB').textContent='Simulate low SpO₂: '+(lowTest?'ON':'off');$('testB').classList.toggle('on',lowTest);$('cardB').textContent='Simulate heart attack / cardiac emergency: '+(cardTest?'ON':'off');$('cardB').classList.toggle('on',cardTest)}
 /* ---------- live engines ---------- */
-function onLine(l){l=l.trim();if(!l)return;if(l[0]==='#'){log(l);return}const p=l.split(',').map(Number);if(p.length!==3||p.some(isNaN))return;
+function onLine(l){l=l.trim();if(!l)return;if(l[0]==='#'){log(l);return}const q=l.split(','),f4=q.length===4?q[3].trim():undefined,p=q.slice(0,3).map(Number);if(q.length<3||q.length>4||p.some(isNaN)||(f4&&isNaN(+f4)))return;
  lastRx=Date.now();if(simOn())return;   /* overlay simulation: live values are ignored, the OLED mirrors the app */
- if(p[0]>0)onPPG(p[0]);const h=p[1]>=30&&p[1]<=220?p[1]:0,s=p[2]>=50&&p[2]<=100?p[2]:0;raw={hr:h,spo2:s,t:Date.now()}}
+ if(f4===undefined){if(p[0]>0)onPPG(p[0])}else if(f4!=='')pushPPG(+f4);   /* v11: filtered sample from the firmware (same as the OLED); empty = still settling */
+ const h=p[1]>=30&&p[1]<=220?p[1]:0,s=p[2]>=50&&p[2]<=100?p[2]:0;raw={hr:h,spo2:s,t:Date.now()}}
 function onChunk(s){if(skip){const i=s.indexOf('\n');if(i<0)return;s=s.slice(i+1);skip=false}buf+=s;if(buf.length>2000)buf='';let i;while((i=buf.indexOf('\n'))>=0){onLine(buf.slice(0,i));buf=buf.slice(i+1)}}
 function setMode(m){mode=m;lp=hp=pv=nS=amp=0;ppg.length=0;medH.length=0;medS.length=0;vit={hr:0,spo2:0};buf='';skip=true;noSig=0;medH.m=medS.m=0;lastRx=Date.now();raw={hr:0,spo2:0,t:0};
- $('cbtn').textContent=(m==='sim'?'Sim':m==='ble'?'BLE':'USB');$('mCon').classList.remove('on');hardLost=false;linkLost=false;hideFB();connUI();keepAwake()}
+ $('cbtn').textContent=(m==='sim'?'Sim':m==='ble'?'📶 BLE':'🔌 Wired');$('mCon').classList.remove('on');hardLost=false;linkLost=false;hideFB();connUI();keepAwake()}
 
 /* ---------- live links: open / tear down / reset ---------- */
 let gen=0,lastPort=null,lastDev=null,bleChar=null,bleH=null,serLoop=null,busy=false,retryT=0,nudgeT=0;
@@ -270,7 +273,7 @@ async function sendCmd(c,frame){if(frame&&txBusy)return;txBusy=!!frame;try{const
  if(mode==='serial'&&port&&port.writable){const w=port.writable.getWriter();try{await w.write(b)}finally{w.releaseLock()}}
  else if(mode==='ble'&&bleChar)await(bleChar.writeValueWithoutResponse?bleChar.writeValueWithoutResponse(b):bleChar.writeValue(b))}catch(e){log('# tx: '+errMsg(e))}finally{if(frame)txBusy=false}}
 /* 25 Hz mirror frame: waveform 0..99 (same scale as the phone graph), HR, SpO2, emergency code */
-function sendFrame(){if(mode==='sim'||!simOn()||linkLost)return;const k=hp/Math.max(amp*2.5,1),w=clamp(Math.round(50+k*38),0,99);sentSim=true;
+function sendFrame(){if(mode==='sim'||!simOn()||linkLost)return;const w=clamp(Math.round(50+nrm(hp)*46),0,99);sentSim=true;
  sendCmd('S'+w+','+(vit.hr||0)+','+(vit.spo2||0)+','+emCode,true)}
 async function teardown(){gen++;const d=dev,c=bleChar,h=bleH,p=port,r=reader,L=serLoop;dev=port=reader=bleChar=bleH=serLoop=null;buf='';
  try{if(c){c.removeEventListener('characteristicvaluechanged',h);await c.stopNotifications()}}catch(e){}
@@ -285,7 +288,7 @@ async function bleOpen(d){const g=++gen;d.addEventListener('gattserverdisconnect
  const sv=await(await d.gatt.connect()).getPrimaryService(0xffe0),c=await sv.getCharacteristic(0xffe1),dec=new TextDecoder(),h=e=>{if(g===gen)onChunk(dec.decode(e.target.value,{stream:true}))};
  await c.startNotifications();c.addEventListener('characteristicvaluechanged',h);dev=lastDev=d;bleChar=c;bleH=h}
 async function serOpen(p){await p.open({baudRate:115200,bufferSize:4096});port=lastPort=p;serLoop=serRun(p,gen)}
-const initDevice=async()=>{await sendCmd('r');await new Promise(r=>setTimeout(r,500));await sendCmd('A'+(cfg.alt==='ext'?1:0))};
+const initDevice=async()=>{await sendCmd('r');await new Promise(r=>setTimeout(r,500));await sendCmd('A'+(cfg.alt==='ext'?1:0));if(!simOn())await sendCmd('M0')};
 async function finishLive(kind,needReset,open,undo){const prev=mode;
  await teardown();
  try{await open()}catch(e){try{undo()}catch(x){}
@@ -325,7 +328,7 @@ function connUI(){[['bleB','ble'],['serB','serial'],['simB','sim']].forEach(([i,
 function hideFB(){$('fbB').style.display='none'}
 let linkLost=false,hardLost=false,linkMsg='';
 function setLink(ok,msg){if(mode==='sim')return;if(ok===!linkLost)return;linkLost=!ok;
- $('cbtn').textContent=(mode==='ble'?'BLE':'USB')+(linkLost?' !':'');
+ $('cbtn').textContent=(mode==='ble'?'📶 BLE':'🔌 Wired')+(linkLost?' !':'');
  if(linkLost){toast(msg+' - sensor disconnected');$('fbT').textContent='Sensor disconnected ('+msg+')';$('fbB').style.display='block'}else{hideFB();toast('Sensor data restored')}}
 function lost(msg){if(mode==='sim')return;hardLost=true;linkMsg=msg;setLink(false,msg)}
 
@@ -361,11 +364,18 @@ function openDet(k){const hr=k==='hr',v=hist.map(r=>hr?r.h:r.s),H=hist.map(r=>hr
  const c=col(hr?'--hr':'--acc');dcc.data.labels=hist.map(r=>hm(r.t));Object.assign(dcc.data.datasets[0],{data:v,label:hr?'BPM (1-min avg)':'SpO₂ % (1-min avg)',borderColor:c,backgroundColor:c+'22'});dcc.update();$('mDet').classList.add('on')}
 
 /* ---------- render ---------- */
-function drawPPG(){const cv=$('ppgC'),cx=cv.getContext('2d'),w=cv.width=cv.clientWidth,h=cv.height=cv.clientHeight;cx.clearRect(0,0,w,h);
- const gx=w*25/149;cx.lineWidth=1;cx.strokeStyle=col('--mut')+'40';cx.beginPath();for(let x=w;x>0;x-=gx){cx.moveTo(x,0);cx.lineTo(x,h)}for(let k=1;k<4;k++){cx.moveTo(0,h*k/4);cx.lineTo(w,h*k/4)}cx.stroke();
+/* Auto-gain: centre on the middle of the visible window and scale its peak-to-peak to ~84% of the height.
+   Fast attack / slow release keeps it steady; the floor stops pure noise being blown up. Shared with the OLED mirror frames. */
+let nMid=0,nHalf=0;const PPG_FLOOR=30;
+function normUpdate(){if(ppg.length<10){nHalf=0;return}let mn=1e12,mx=-1e12;for(const v of ppg){if(v<mn)mn=v;if(v>mx)mx=v}
+ const tm=(mn+mx)/2,th=Math.max((mx-mn)/2*1.08,PPG_FLOOR);
+ if(!nHalf){nMid=tm;nHalf=th;return}nMid+=.15*(tm-nMid);nHalf+=(th>nHalf?.5:.04)*(th-nHalf)}
+const nrm=v=>nHalf?clamp((v-nMid)/nHalf,-1,1):0;
+function drawPPG(){const cv=$('ppgC'),cx=cv.getContext('2d'),d=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=Math.round(w*d);cv.height=Math.round(h*d);cx.setTransform(d,0,0,d,0,0);cx.clearRect(0,0,w,h);
+ const gx=w*PPG_HZ/(PPG_N-1);cx.lineWidth=1;cx.strokeStyle=col('--mut')+'40';cx.beginPath();for(let x=w;x>0;x-=gx){cx.moveTo(x,0);cx.lineTo(x,h)}for(let k=1;k<4;k++){cx.moveTo(0,h*k/4);cx.lineTo(w,h*k/4)}cx.stroke();
  cx.strokeStyle=col('--mut')+'90';cx.beginPath();cx.moveTo(0,h/2);cx.lineTo(w,h/2);cx.moveTo(w-gx,h-14);cx.lineTo(w-gx,h-6);cx.moveTo(w-gx,h-10);cx.lineTo(w,h-10);cx.moveTo(w,h-14);cx.lineTo(w,h-6);cx.stroke();
  cx.fillStyle=col('--mut');cx.font='11px system-ui';cx.textAlign='center';cx.fillText('1 s',w-gx/2,h-14);cx.textAlign='left';if(ppg.length<2)return;
- cx.lineWidth=3;cx.strokeStyle=col('--acc');cx.beginPath();const k=h*.38/Math.max(amp*2.5,1);ppg.forEach((v,i)=>{const x=i*w/149,y=h/2-v*k;i?cx.lineTo(x,y):cx.moveTo(x,y)});cx.stroke()}
+ cx.lineWidth=2.5;cx.lineJoin='round';cx.strokeStyle=col('--acc');cx.beginPath();ppg.forEach((v,i)=>{const x=i*w/(PPG_N-1),y=h/2-nrm(v)*h*.46;i?cx.lineTo(x,y):cx.moveTo(x,y)});cx.stroke()}
 const SHIELD='<svg width="34" height="38" viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1 2 5v7c0 6.2 4.2 11.2 10 13 5.8-1.8 10-6.8 10-13V5z" fill="#22c55e"/><path d="m7.5 13 3.2 3.2L16.8 10" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function render(){if(document.hidden)return;const{hr,spo2}=vit,T=th();$('hv').textContent=hr||'--';$('sv').textContent=spo2||'--';showTr($('ht'),hr?trendOf(trH,3):0,'var(--warn)','var(--warn)');showTr($('st'),spo2?trendOf(trS,1):0,'var(--ok)','var(--bad)');let c,i,t,d,sigIssue=false;
  if(!hr&&!spo2){const q=noSig?Math.floor((Date.now()-noSig)/1000):0;if(q>=15){sigIssue=true;c='warn';i='';t='Signal issue';d='No reliable reading for 15 s. Check sensor fit or the connection, or just keep waiting. Changing source is optional.'}else{c='warn';i='';t='No signal';d='Searching for pulse… '+q+' s (10 s warm-up, readings are averaged)'}}
@@ -373,7 +383,7 @@ function render(){if(document.hidden)return;const{hr,spo2}=vit,T=th();$('hv').te
  else if(spo2&&spo2<T.warn){c='bad';i='';t='LOW: SpO₂ < '+T.warn+'%';d='Rest and breathe deeply'}
  else{c='ok';i='ok';t='Status: OK';d=cfg.alt==='ext'?'Vitals stable · extreme-altitude limits':'Vitals stable'}
  $('ban').style.borderColor=`var(--${c})`;$('banI').innerHTML=i==='ok'?SHIELD:'';$('banI').style.display=i==='ok'?'':'none';$('banT').textContent=t;$('banT').style.color=`var(--${c})`;$('banD').textContent=d;$('banB').style.display=sigIssue?'inline-flex':'none';
- const lost=linkLost&&mode!=='sim',pc=lost?'bad':c,pt=lost?'Sensor lost':t;$('pill').className='pill '+pc;$('pillT').textContent=(simOn()&&mode!=='sim'?'SIM · ':'')+(pc==='ok'?'OK':pt);
+ const lost=linkLost&&mode!=='sim',pc=lost?'bad':c,pt=lost?'Sensor lost':t;$('pill').className='pill '+pc;$('pillT').textContent=(simOn()&&mode!=='sim'?'SIM · ':'')+(mode==='ble'?'📶 ':mode==='serial'?'🔌 ':'')+(pc==='ok'?'OK':pt);
  const st=$('strip');st.style.display=c==='bad'&&!lost?'block':'none';st.textContent=t+' · '+d}
 
 /* ---------- safety ---------- */
@@ -433,14 +443,14 @@ function pubMe(){if(cfg.role==='g')return;const now=Date.now();ingest({id:myId+'
 function normFb(v){v=String(v).trim();const m=v.match(/^(https:\/\/[^\/?#]+)\/groups\/([A-Za-z0-9_-]+)/),f=cleanFb(m?m[1]:v);if(m&&f){$('gc').value=m[2].slice(0,24).toUpperCase()}return f}
 let joinWasCreate=false;
 function groupUI(){const g=!!cfg.group;$('gBadge').style.display=g?'flex':'none';$('gBtns').style.display=g?'none':'grid';if(g)$('gBadgeT').textContent=cfg.group}
-function openJoin(code,fb,create){const c=create===true;joinWasCreate=c;$('jT').textContent=c?'➕ Create Group':'➕ Join Group';
- $('jP').textContent=c?'Keep this code or type your own, then share the QR with your group.':'Enter the group code, or scan the QR code your group shared.';$('jGo').textContent=c?'Create':'Join';
+function openJoin(code,fb,create){const c=create===true;joinWasCreate=c;$('jT').textContent=c?'Create Buddies':'Join Buddies';
+ $('jP').textContent=c?'Keep this code or type your own, then share the QR with your Buddies.':'Enter the Buddies code, or scan the QR code your Buddies shared.';$('jGo').textContent=c?'Create':'Join';
  $('gc').value=c?(code||Math.random().toString(36).slice(2,8).toUpperCase()):(code!=null?code:cfg.group||'');$('fb').value=fb||cfg.fb||DEFAULT_FB;
  $('mBud').classList.remove('on');$('mJoin').classList.add('on');setTimeout(()=>$('gc').focus(),60)}
 function joinG(){const f=normFb($('fb').value),g=$('gc').value.replace(/[^A-Za-z0-9_-]/g,'').slice(0,24).toUpperCase(),n=(cfg.name||'').trim()||'Skier';
- if(!g)return toast('Enter the group code');
+ if(!g)return toast('Enter the Buddies code');
  if(!f)return toast('Firebase link must be your Realtime Database URL, like https://xxx-default-rtdb.region.firebasedatabase.app');
- cfg.fb=f;cfg.name=n;cfg.group=g;saveCfg();warned={};$('mJoin').classList.remove('on');watchPos();cloudStart();renderQR();pubMe();renderBuddies();toast((joinWasCreate?'Created group ':'Joined group ')+g);if(joinWasCreate)openM('Bud')}
+ cfg.fb=f;cfg.name=n;cfg.group=g;saveCfg();warned={};$('mJoin').classList.remove('on');watchPos();cloudStart();renderQR();pubMe();renderBuddies();toast((joinWasCreate?'Created Buddies ':'Joined Buddies ')+g);if(joinWasCreate)openM('Bud')}
 function setHost(v){cfg.host=v.trim();saveCfg();renderQR()}
 /* base address for join links: the host box if filled, else the page's own origin+path (never hardcoded localhost) */
 const PUBLIC_URL='https://sarnite.github.io/SkiSense/';
@@ -452,7 +462,7 @@ function renderQR(){const b=$('qrBox'),c=$('qrC');groupUI();if(!cfg.group||!/^ht
  const u=joinUrl();$('qrU').textContent=u||'No web address yet. Type the Host / Server URL above (e.g. https://yourname.github.io/skisense/), or open this page from its http/https address instead of a file.';b.style.display='block';if(!u||!window.qrcode){c.style.display='none';return}
  try{const q=qrcode(0,'M');q.addData(u);q.make();const n=q.getModuleCount(),z=Math.max(3,Math.floor(240/(n+8))),w=(n+8)*z,x=c.getContext('2d');c.width=c.height=w;c.style.display='block';x.fillStyle='#fff';x.fillRect(0,0,w,w);x.fillStyle='#000';
   for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+4)*z,(r+4)*z,z,z)}catch(e){c.style.display='none'}}
-function leaveG(){warned={};sosAt={};cfg.group='';saveCfg();cloudStop();members={};renderBuddies();renderQR();toast('Left group')}
+function leaveG(){warned={};sosAt={};cfg.group='';saveCfg();cloudStop();members={};renderBuddies();renderQR();toast('Left Buddies')}
 const TH_OF=x=>x==='ext'?TH.ext:TH.low;
 /* risk rank: 0 OK, 1 no signal, 2 offline, 3 low O2, 4 critical, 5 SOS. Each skier is judged by THEIR OWN altitude setting. */
 function memStat(m){const now=Date.now(),T=TH_OF(m.alt),age=Math.max(0,Math.round((now-(+m.t||m.rx))/1000)),s=+m.spo2,ok=m.ok&&now-m.ok<12e4?' · said OK':'';
@@ -467,11 +477,11 @@ function buddyHTML(m){const st=memStat(m),gps=isFinite(m.lat)&&m.lat!==null,ago=
  return `<div class="card bd flex justify-between items-center" style="border-color:var(--${st.c})"><div><b>${esc(m.name||'Skier')}</b>${m.src==='sim'?' <span class="mut text-xs">(SIM)</span>':''}${m.alt==='ext'?' <span class="mut text-xs">🏔</span>':''}<div class="text-sm font-bold" style="color:var(--${st.c})">${st.t}</div><div class="mut text-xs">${ago}${gps?` · <a href="https://maps.google.com/?q=${+m.lat},${+m.lon}" target="_blank" rel="noopener" style="text-decoration:underline">map</a>`:''}</div></div><div class="text-right"><b style="font-size:1.8rem;color:var(--${st.c})">${+m.spo2||'--'}%</b><div class="mut">${+m.hr||'--'} bpm</div></div></div>`}
 function renderBuddies(){const now=Date.now();for(const k in members)if(now-(+members[k].t||members[k].rx)>36e5){delete members[k];delete warned[k]}
  const a=Object.values(members).sort((x,y)=>memStat(y).r-memStat(x).r),h=a.map(buddyHTML).join(''),g=cfg.role==='g';
- $('bl').innerHTML=g?'<p class="mut text-sm">Group list is on the main screen.</p>':(h||'<p class="mut text-sm">No buddies yet. Create or join a group to see your buddies.</p>');
+ $('bl').innerHTML=g?'<p class="mut text-sm">Buddies list is on the main screen.</p>':(h||'<p class="mut text-sm">No buddies yet. Create or join Buddies to see them here.</p>');
  if(!g)return;const r=a.map(m=>memStat(m).r);
- $('wl').innerHTML=h||'<div class="card mut text-sm">No skiers yet. Open 🧑‍🤝‍🧑, enter the same group code and Firebase URL as your skiers, then Join.</div>';
+ $('wl').innerHTML=h||'<div class="card mut text-sm">No skiers yet. Open Buddies 🧑‍🤝‍🧑, enter the same Buddies code and Firebase URL as your skiers, then Join.</div>';
  $('wn').textContent=a.length;$('wOk').textContent=r.filter(x=>x===0).length;$('wWa').textContent=r.filter(x=>x===1||x===2).length;$('wBa').textContent=r.filter(x=>x>=3).length;
- $('wg').textContent=cfg.group?'Group '+cfg.group+' · '+(!cfg.fb?'no cloud URL':es&&es.readyState===1?'cloud live':'cloud connecting…'):'Not in a group'}
+ $('wg').textContent=cfg.group?'Buddies '+cfg.group+' · '+(!cfg.fb?'no cloud URL':es&&es.readyState===1?'cloud live':'cloud connecting…'):'Not in Buddies'}
 /* coach alarm only when a skier's state gets worse (rank >= 2 and changed) */
 function watchCheck(){for(const id in members){const m=members[id],st=memStat(m);
  if(!(id in warned))warned[id]=st.r===2?2:0;
