@@ -52,6 +52,12 @@ nav{position:fixed;left:0;right:0;bottom:0;z-index:35;padding:1.5rem .75rem calc
 nav>div{max-width:28rem;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
 nav .btn{min-height:4rem;font-size:.9rem;padding:0 .4rem}
 #fbB{border:2px solid var(--bad)!important}
+.mh{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.xb{min-width:3rem;min-height:3rem;width:3rem;height:3rem;padding:0;border-radius:50%;border:0;background:var(--card2);color:var(--fg);font-size:1.4rem;font-weight:900;line-height:1;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.ov .xb,.xb.ab{position:absolute;top:calc(.6rem + env(safe-area-inset-top,0px));right:.6rem;background:#0003;color:inherit;z-index:2}
+.tr{display:inline-block;min-width:1.6rem;margin-left:.15rem;font-size:2.2rem;font-weight:900;line-height:1;vertical-align:.35em}
+#mOk{z-index:80}
+#gBadge{display:none;align-items:center;gap:.7rem;border:2px solid var(--ok);border-left-width:6px;border-radius:1rem;padding:.8rem 1rem;background:color-mix(in srgb,var(--ok) 12%,var(--card))}
 header .btn{min-width:3.5rem;padding:0 .7rem}
 .sheet{padding-bottom:calc(1rem + env(safe-area-inset-bottom,0px))}
 @media (orientation:landscape) and (max-height:520px){.sheet{max-height:98vh;max-width:36rem}main{max-width:44rem!important}#sos{margin-top:1.5rem!important;min-height:5rem!important}}
@@ -59,7 +65,7 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
 </head>
 <body>
 <header class="sticky top-0 z-30 px-3 py-2" style="background:var(--bg);border-bottom:1px solid var(--bd)">
- <div class="max-w-md mx-auto flex flex-wrap items-center justify-between gap-2"><div><b style="font-size:1.25rem;letter-spacing:-.02em;white-space:nowrap">⛷ SkiSense</b><div class="mut text-xs" style="white-space:nowrap">⏱ <span id="up">00:00:00</span> · <span id="net">☁ off · 📡 0</span></div></div>
+ <div class="max-w-md mx-auto flex flex-wrap items-center justify-between gap-2"><div><b style="font-size:1.25rem;letter-spacing:-.02em;white-space:nowrap">⛷ SkiSense</b><div class="mut text-xs" style="white-space:nowrap">⏱ <span id="up">00:00:00</span> · <span id="net">☁ off</span></div></div>
   <div class="flex gap-2"><button class="btn" onclick="openM('Bud')" aria-label="Ski Buddies">🧑‍🤝‍🧑</button><button class="btn" onclick="openM('Set')" aria-label="Settings">⚙</button><button id="cbtn" class="btn pri" onclick="openM('Con')">🧪 Sim</button></div>
   <button id="pill" class="pill ok" style="display:none"><i class="dot"></i><span id="pShieldW"></span><span id="pillT">Starting…</span></button></div>
  <div id="strip"></div>
@@ -81,8 +87,8 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
  <div id="ban" class="card flex gap-3 items-center"><div id="banI" class="text-3xl">🛡</div><div><b id="banT">Starting…</b><div id="banD" class="mut text-sm"></div><button id="banB" class="btn mt-2" style="display:none;min-height:2.75rem" onclick="openM('Con')">Change source (optional)</button></div></div>
  
  <div class="grid grid-cols-2 gap-3">
-  <button class="card text-left" onclick="openDet('hr')"><div class="text-sm font-bold" style="color:var(--hr)">❤ HEART RATE</div><div><span id="hv" style="font-size:4.6rem;line-height:1;font-weight:900;letter-spacing:-.03em">--</span> <span class="mut text-sm">BPM</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
-  <button class="card text-left" onclick="openDet('sp')"><div class="text-sm font-bold" style="color:var(--acc)">💧 BLOOD OXYGEN</div><div><span id="sv" style="font-size:4.6rem;line-height:1;font-weight:900;letter-spacing:-.03em">--</span> <span class="mut text-sm">%</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
+  <button class="card text-left" onclick="openDet('hr')"><div class="text-sm font-bold" style="color:var(--hr)">❤ HEART RATE</div><div><span id="hv" style="font-size:4.6rem;line-height:1;font-weight:900;letter-spacing:-.03em">--</span><span id="ht" class="tr"></span> <span class="mut text-sm">BPM</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
+  <button class="card text-left" onclick="openDet('sp')"><div class="text-sm font-bold" style="color:var(--acc)">💧 BLOOD OXYGEN</div><div><span id="sv" style="font-size:4.6rem;line-height:1;font-weight:900;letter-spacing:-.03em">--</span><span id="st" class="tr"></span> <span class="mut text-sm">%</span></div><div class="mut text-sm mt-2">Tap for 24 h ›</div></button>
  </div>
  <div class="card"><div class="text-sm font-bold mb-2">LIVE PPG <span class="mut font-normal">(filtered, ~25 Hz)</span></div><div style="height:8rem"><canvas id="ppgC" style="width:100%;height:100%"></canvas></div></div>
  <div class="card"><div class="text-sm font-bold mb-2">30-MIN TREND <span class="mut font-normal">(1-min averages)</span></div><div style="height:12rem"><canvas id="trC"></canvas></div></div>
@@ -93,18 +99,16 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
 
 <div id="toast" class="fixed left-3 right-3 z-50 text-center card" style="bottom:1.5rem;opacity:0;transition:opacity .3s;pointer-events:none;max-width:28rem;margin:auto"></div>
 
-<div id="fbB" class="card space-y-2" style="display:none;position:fixed;top:calc(5.5rem + env(safe-area-inset-top,0px));left:.5rem;right:.5rem;z-index:45;max-width:28rem;margin:auto"><b id="fbT"></b><div class="mut text-sm">Staying in live mode - no simulated data is shown. Vitals read -- until the sensor is back.</div><button class="btn pri" onclick="openM('Con')">Reconnect / change source</button><button class="btn" onclick="resetLink()">♻ Reset connection</button></div>
+<div id="fbB" class="card space-y-2" style="display:none;position:fixed;top:calc(5.5rem + env(safe-area-inset-top,0px));left:.5rem;right:.5rem;z-index:45;max-width:28rem;margin:auto"><button class="xb ab" onclick="hideFB()" aria-label="Close">✕</button><b id="fbT" style="display:block;padding-right:3.5rem"></b><div class="mut text-sm">Staying in live mode - no simulated data is shown. Vitals read -- until the sensor is back.</div><button class="btn pri" onclick="openM('Con')">Reconnect / change source</button><button class="btn" onclick="resetLink()">♻ Reset connection</button></div>
 
-<div class="modal" id="mCon"><div class="sheet"><b>Data source</b>
+<div class="modal" id="mCon"><div class="sheet"><div class="mh"><b>Data source</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
  <button id="bleB" class="btn" onclick="connBLE()">📶 Bluetooth (BLE-Nano)</button>
  <button id="serB" class="btn" onclick="connSer()">🔌 USB Serial (115200)</button>
  <button id="simB" class="btn" onclick="userSim()">🧪 Simulation</button>
  <button class="btn" onclick="resetLink()">♻ Reset connection (flush buffers)</button>
- <button id="lockB" class="btn" onclick="toggleLock()">🔓 Lock to Simulation: off</button>
- <p class="mut text-sm">If a live link drops or sends nothing for 5 s, the app stays in live mode, shows a Sensor disconnected banner and keeps trying to re-link. It never switches to simulation by itself. Reset connection closes and reopens the link and flushes the buffers, with no unplugging. Lock to Simulation pins the app in simulation until you unlock it (unlocks on reload). Web Bluetooth/Serial need Chrome or Edge (not iOS).</p>
  <button class="btn" onclick="closeM(this)">Close</button></div></div>
 
-<div class="modal" id="mSet"><div class="sheet"><b>Settings</b>
+<div class="modal" id="mSet"><div class="sheet"><div class="mh"><b>Settings</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
  <label class="mut text-sm">Your name<input type="text" id="nm" maxlength="20" oninput="cfg.name=this.value.slice(0,20)||'Skier';saveCfg()"></label>
  <div class="flex gap-2 items-center"><button class="btn" onclick="scl(-.1)" aria-label="Smaller text">A-</button><b id="scl" class="flex-1 text-center">100%</b><button class="btn" onclick="scl(.1)" aria-label="Larger text">A+</button></div>
  <div class="seg"><button id="altL" class="btn" onclick="setAlt('low')">🌾 Low Altitude</button><button id="altH" class="btn" onclick="setAlt('ext')">🏔️ High Altitude</button></div>
@@ -116,35 +120,36 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
  <pre id="log" class="mut text-xs" style="white-space:pre-wrap;max-height:8rem;overflow:auto"></pre>
  <button class="btn" onclick="closeM(this)">Close</button></div></div>
 
-<div class="modal" id="mRst"><div class="sheet"><b>Clear all data?</b>
+<div class="modal" id="mRst"><div class="sheet"><div class="mh"><b>Clear all data?</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
  <p id="rstT" class="mut text-sm"></p>
  <button id="rstY" class="btn pri">Clear &amp; continue</button>
  <button class="btn" onclick="closeM(this)">Cancel</button></div></div>
 
-<div class="modal" id="mBud"><div class="sheet"><b>🧑‍🤝‍🧑 Ski Buddies</b>
+<div class="modal" id="mBud"><div class="sheet"><div class="mh"><b>🧑‍🤝‍🧑 Ski Buddies</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
 <button id="roleB" class="btn pri" onclick="toggleRole()">🎿 Role: Skier (tap to switch)</button>
  <p class="mut text-xs">Skier = shares your vitals. Coach / Parent = watches the whole group and shares nothing.</p>
- <div id="gInfo" class="card mut text-sm">Not in a group</div>
- <div class="flex gap-2"><button class="btn pri flex-1" onclick="openJoin()">➕ Join Group</button><button class="btn flex-1" onclick="leaveG()">Leave</button></div>
+ <div id="gBadge"><span style="font-size:1.6rem">✅</span><div class="flex-1"><div class="mut text-xs">YOU ARE IN GROUP</div><b id="gBadgeT" style="font-size:1.4rem;letter-spacing:.06em"></b></div><button class="btn" onclick="leaveG()">Leave</button></div>
+ <div id="gBtns" class="grid gap-2"><button class="btn pri" onclick="openJoin('',null,true)">+ Create Group</button><button class="btn" onclick="openJoin()">+ Join Group</button></div>
  <div id="qrBox" class="card text-center" style="display:none"><canvas id="qrC" style="margin:0 auto;background:#fff;border-radius:.5rem;max-width:100%"></canvas><div class="text-sm font-bold mt-2">Scan to join this group</div>
   <label class="mut text-xs block text-left mt-2">Host / Server URL (the address other phones can reach)<input type="text" id="hostIn" placeholder="auto: this page's address" oninput="setHost(this.value)"></label>
   <div id="qrU" class="mut text-xs mt-2" style="word-break:break-all"></div><button class="btn mt-2" onclick="joinUrl()&&navigator.clipboard&&navigator.clipboard.writeText(joinUrl())">📋 Copy join link</button></div>
  <div id="bl" class="grid gap-2"></div>
- <details><summary class="btn">📡 Offline mesh link</summary>
-  <p class="mut text-sm my-2">Both phones must share a local link (same hotspot/Wi-Fi). 1) Host: Create invite, send code. 2) Guest: paste, Connect, send answer back. 3) Host: paste answer, Connect.</p>
-  <textarea id="sdp" rows="4" placeholder="Invite / answer code"></textarea>
-  <div class="flex gap-2 mt-2"><button class="btn flex-1" onclick="p2pOffer()">Create invite</button><button class="btn flex-1" onclick="p2pAccept()">Connect</button><button class="btn" onclick="navigator.clipboard&&navigator.clipboard.writeText($('sdp').value)" aria-label="Copy">📋</button></div>
- </details>
  <button class="btn" onclick="closeM(this)">Close</button></div></div>
 
-<div class="modal" id="mJoin"><div class="sheet"><b>➕ Join Group</b>
- <label class="mut text-sm">Your name<input type="text" id="jn" maxlength="20" placeholder="Your name" autocomplete="off"></label>
- <label class="mut text-sm">Group name / code<input type="text" id="gc" maxlength="24" placeholder="e.g. 0ZBG21 (new code = new group)" autocomplete="off" autocapitalize="characters"></label>
- <label class="mut text-sm">Firebase DB link<input type="text" id="fb" placeholder="https://xxx.firebasedatabase.app" autocomplete="off"></label>
- <button class="btn pri" onclick="joinG()">Join</button>
+<div class="modal" id="mJoin"><div class="sheet"><div class="mh"><b id="jT">➕ Join Group</b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
+ <p class="mut text-sm" id="jP"></p>
+ <label class="mut text-sm">Group code<input type="text" id="gc" maxlength="24" placeholder="e.g. 0ZBG21" autocomplete="off" autocapitalize="characters"></label>
+ <details><summary class="btn">⚙ Database link (advanced)</summary><label class="mut text-sm block mt-2">Firebase DB link<input type="text" id="fb" placeholder="https://xxx.firebasedatabase.app" autocomplete="off"></label></details>
+ <button id="jGo" class="btn pri" onclick="joinG()">Join</button>
  <button class="btn" onclick="closeM(this)">Cancel</button></div></div>
 
-<div class="modal" id="mDet"><div class="sheet"><b id="dT"></b>
+<div class="modal" id="mOk"><div class="sheet"><div class="mh"><b>Are you sure you are okay?</b><button class="xb" onclick="keepAlert()" aria-label="Close">✕</button></div>
+ <p class="text-sm">Please move to a safe area as soon as possible.</p>
+ <button class="btn pri" onclick="okDismiss()">✅ I'm Okay</button>
+ <button class="btn" onclick="rearm()">⏱ Alert Buddies Again in 1 Minute</button>
+ <button class="btn" style="background:var(--bad);color:#fff" onclick="keepAlert()">🔔 Keep Alert Active</button></div></div>
+
+<div class="modal" id="mDet"><div class="sheet"><div class="mh"><b id="dT"></b><button class="xb" onclick="closeM(this)" aria-label="Close">✕</button></div>
  <div class="grid grid-cols-3 gap-2 text-center">
   <div class="card"><div class="mut text-xs">AVERAGE</div><b id="dAvg"></b></div>
   <div class="card"><div class="mut text-xs">HIGH</div><b id="dHi"></b></div>
@@ -157,13 +162,13 @@ header .btn{min-width:3.5rem;padding:0 .7rem}
  <div style="height:14rem"><canvas id="dC"></canvas></div>
  <button class="btn" onclick="closeM(this)">Close</button></div></div>
 
-<div class="ov" id="grace"><div style="font-size:3rem">⚠</div><b id="graceT" style="font-size:1.6rem"></b>
+<div class="ov" id="grace"><button class="xb" onclick="imOk()" aria-label="Close">✕</button><div style="font-size:3rem">⚠</div><b id="graceT" style="font-size:1.6rem"></b>
  <div style="font-size:1.2rem">SpO₂ <b id="gS"></b>% — alerting buddies in <b id="gC" style="font-size:2.5rem">10</b> s</div>
  <button class="btn" onclick="imOk()" style="width:100%;min-height:6rem;font-size:1.8rem;background:#064e3b;color:#fff;border-color:#064e3b">✅ I'M OK</button></div>
 
-<div class="ov" id="em"><div style="font-size:4rem">🆘</div><b id="emT" style="font-size:2rem"></b><b id="emN" style="font-size:2.4rem"></b>
+<div class="ov" id="em"><button class="xb" onclick="dismissEm()" aria-label="Close">✕</button><div style="font-size:4rem">🆘</div><b id="emT" style="font-size:2rem"></b><b id="emN" style="font-size:2.4rem"></b>
  <div id="emK" style="font-size:1.2rem"></div><div id="emV" style="font-size:1.6rem;font-weight:800"></div><div id="emG" style="font-size:1.2rem"></div><div id="emW" style="opacity:.85"></div>
- <button class="btn" onclick="$('em').classList.remove('on');alarm(false)" style="width:100%;min-height:5rem;font-size:1.5rem;background:#fff;color:#7f1d1d;border-color:#fff">DISMISS</button></div>
+ <button class="btn" onclick="dismissEm()" style="width:100%;min-height:5rem;font-size:1.5rem;background:#fff;color:#7f1d1d;border-color:#fff">DISMISS</button></div>
 
 <script>
 const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),pad=n=>String(n).padStart(2,'0'),hm=t=>{const d=new Date(t);return pad(d.getHours())+':'+pad(d.getMinutes())};
@@ -195,7 +200,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if
 /* ---------- audio / vibration / GPS ---------- */
 let ac,alI,lastPos=null;
 function beep(f){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.value=.25;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.3)}catch(e){}}
-function alarm(on){clearInterval(alI);if(on){let n=0;alI=setInterval(()=>{beep(n++%2?660:880);navigator.vibrate&&navigator.vibrate([400,100,400])},700)}else navigator.vibrate&&navigator.vibrate(0)}
+function alarm(on){clearInterval(alI);if(on){const go=()=>{beep(880);setTimeout(()=>beep(660),500);navigator.vibrate&&navigator.vibrate([200,100,200,100,400])};go();alI=setInterval(go,1100)}else navigator.vibrate&&navigator.vibrate(0)}
 function watchPos(){if(navigator.geolocation&&!watchPos.id)watchPos.id=navigator.geolocation.watchPosition(p=>lastPos={lat:p.coords.latitude,lon:p.coords.longitude,t:Date.now()},()=>{},{enableHighAccuracy:true,maximumAge:10000})}
 const getPos=()=>new Promise(r=>{if(lastPos&&Date.now()-lastPos.t<6e4||!navigator.geolocation)return r(lastPos);navigator.geolocation.getCurrentPosition(p=>r({lat:p.coords.latitude,lon:p.coords.longitude}),()=>r(lastPos),{timeout:4000})});
 document.addEventListener('pointerdown',()=>{try{ac=ac||new AudioContext();ac.resume()}catch(e){}watchPos();keepAwake()},{once:true});
@@ -212,6 +217,11 @@ function toggleFast(){const next=SPEEDS[(SPEEDS.indexOf(speed)+1)%SPEEDS.length]
  speed=next;acc={h:[],s:[],p:[]};minStart=Date.now();$('fastB').textContent=speedLabel();drawTrend()}
 const minMs=()=>60000/speed;
 
+/* ---------- trend arrows: newest ~10 s vs the 10 s before (needs 12+ s of valid readings) ---------- */
+const trH=[],trS=[];
+function pushTr(a,v){if(!v){a.length=0;return}a.push(v);if(a.length>20)a.shift()}
+function trendOf(a,t){if(a.length<12)return 0;const h=a.length>>1,m=x=>x.reduce((p,q)=>p+q,0)/x.length,d=m(a.slice(h))-m(a.slice(0,h));return d>=t?1:d<=-t?-1:2}
+function showTr(el,k,cUp,cDn){const g=['','↑','↓','→'][k===2?3:k===1?1:k===-1?2:0];el.textContent=g;el.style.color=k===1?cUp:k===-1?cDn:'var(--mut)'}
 /* ---------- signal chain ---------- */
 function onPPG(v){lp+=.4*(v-lp);hp=.97*(hp+lp-pv);pv=lp;const a=Math.abs(hp);nS++;
  amp=nS<2?a:.995*amp+.005*(amp>0?Math.min(a,amp*4):a);ppg.push(hp);if(ppg.length>150)ppg.shift();acc.p.push(a)}
@@ -227,7 +237,7 @@ function onLine(l){l=l.trim();if(!l)return;if(l[0]==='#'){log(l);return}const p=
  lastRx=Date.now();if(p[0]>0)onPPG(p[0]);const h=p[1]>=30&&p[1]<=220?p[1]:0,s=p[2]>=50&&p[2]<=100?p[2]:0;raw={hr:h,spo2:s,t:Date.now()}}
 function onChunk(s){if(skip){const i=s.indexOf('\n');if(i<0)return;s=s.slice(i+1);skip=false}buf+=s;if(buf.length>2000)buf='';let i;while((i=buf.indexOf('\n'))>=0){onLine(buf.slice(0,i));buf=buf.slice(i+1)}}
 function setMode(m){mode=m;lp=hp=pv=nS=amp=0;ppg.length=0;medH.length=0;medS.length=0;vit={hr:0,spo2:0};buf='';skip=true;noSig=0;medH.m=medS.m=0;lastRx=Date.now();raw={hr:0,spo2:0,t:0};
- $('cbtn').textContent=(m==='sim'?'🧪 Sim':m==='ble'?'📶 BLE':'🔌 USB')+(simLock?' 🔒':'');$('mCon').classList.remove('on');hardLost=false;linkLost=false;hideFB();connUI();keepAwake()}
+ $('cbtn').textContent=(m==='sim'?'🧪 Sim':m==='ble'?'📶 BLE':'🔌 USB')+'';$('mCon').classList.remove('on');hardLost=false;linkLost=false;hideFB();connUI();keepAwake()}
 
 /* ---------- live links: open / tear down / reset ---------- */
 let gen=0,lastPort=null,lastDev=null,bleChar=null,bleH=null,serLoop=null,busy=false,retryT=0,nudgeT=0;
@@ -273,7 +283,6 @@ async function resetLink(quiet){if(mode==='sim')return quiet||toast('Nothing to 
 function autoRecover(){if(mode==='sim'||busy)return;const n=Date.now();
  if(hardLost&&n-retryT>4000){retryT=n;resetLink(true)}           /* link dropped: keep re-opening the same device, never switch mode */
  else if(!hardLost&&n-lastRx>5000&&n-nudgeT>10000){nudgeT=n;sendCmd('r')}}  /* link up but silent: ask firmware to restart */
-let simLock=false;
 function askReset(msg,fn){$('rstT').textContent=msg;$('rstY').onclick=()=>{$('mRst').classList.remove('on');fn()};$('mRst').classList.add('on')}
 function resetAll(){
  noSig=0;medH.m=medS.m=0;hist=[];LS.set('ag_hist',[]);acc={h:[],s:[],p:[]};minStart=Date.now();vBase=rBase=Date.now();
@@ -282,7 +291,6 @@ function resetAll(){
  lowTest=false;$('testB').textContent='🫁 Simulate low SpO₂: off';simHR=76;simS=97;
  $('mDet').classList.remove('on');hideFB();drawTrend();render();toast('Data reset')}
 function liveGate(withReset,noReset){
- if(simLock)return toast('Locked to Simulation – unlock first');
  if(mode!=='sim')return noReset();
  askReset('Connecting to a live device clears all history, trends and alert state so the demo starts from a clean baseline.',withReset)}
 async function connBLE(){if(!await waitBT())return toast(BT_MISSING);liveGate(()=>doBLE(true),()=>doBLE(false))}
@@ -290,16 +298,10 @@ function connSer(){if(!navigator.serial)return toast('Web Serial unavailable –
 function userSim(){if(mode==='sim'){$('mCon').classList.remove('on');return}
  askReset('Switching back to Simulation clears all history, trends and alert state.',async()=>{await disc();resetAll()})}
 function connUI(){[['bleB','ble'],['serB','serial'],['simB','sim']].forEach(([i,m])=>$(i).classList.toggle('act',mode===m))}
-function setLockUI(){$('lockB').textContent=(simLock?'🔒':'🔓')+' Lock to Simulation: '+(simLock?'ON':'off');$('bleB').disabled=$('serB').disabled=simLock;$('cbtn').textContent='🧪 Sim'+(simLock?' 🔒':'')}
-function toggleLock(){
- if(simLock){simLock=false;setLockUI();toast('Simulation unlocked');return}
- const on=()=>{simLock=true;setLockUI();toast('Locked to Simulation')};
- if(mode==='sim')return on();
- askReset('Locking to Simulation disconnects the device and clears all history, trends and alert state.',async()=>{await disc();resetAll();on()})}
 function hideFB(){$('fbB').style.display='none'}
 let linkLost=false,hardLost=false,linkMsg='';
 function setLink(ok,msg){if(mode==='sim')return;if(ok===!linkLost)return;linkLost=!ok;
- $('cbtn').textContent=(mode==='ble'?'📶 BLE':'🔌 USB')+(linkLost?' ⚠':'')+(simLock?' 🔒':'');
+ $('cbtn').textContent=(mode==='ble'?'📶 BLE':'🔌 USB')+(linkLost?' ⚠':'');
  if(linkLost){toast(msg+' - sensor disconnected');$('fbT').textContent='⚠ Sensor disconnected ('+msg+')';$('fbB').style.display='block'}else{hideFB();toast('Sensor data restored')}}
 function lost(msg){if(mode==='sim')return;hardLost=true;linkMsg=msg;setLink(false,msg)}
 
@@ -336,7 +338,7 @@ function drawPPG(){const cv=$('ppgC'),cx=cv.getContext('2d'),w=cv.width=cv.clien
  cx.fillStyle=col('--mut');cx.font='11px system-ui';cx.textAlign='center';cx.fillText('1 s',w-gx/2,h-14);cx.textAlign='left';if(ppg.length<2)return;
  cx.lineWidth=3;cx.strokeStyle=col('--acc');cx.beginPath();const k=h*.38/Math.max(amp*2.5,1);ppg.forEach((v,i)=>{const x=i*w/149,y=h/2-v*k;i?cx.lineTo(x,y):cx.moveTo(x,y)});cx.stroke()}
 const SHIELD='<svg width="34" height="38" viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1 2 5v7c0 6.2 4.2 11.2 10 13 5.8-1.8 10-6.8 10-13V5z" fill="#22c55e"/><path d="m7.5 13 3.2 3.2L16.8 10" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-function render(){if(document.hidden)return;const{hr,spo2}=vit,T=th();$('hv').textContent=hr||'--';$('sv').textContent=spo2||'--';let c,i,t,d,sigIssue=false;
+function render(){if(document.hidden)return;const{hr,spo2}=vit,T=th();$('hv').textContent=hr||'--';$('sv').textContent=spo2||'--';showTr($('ht'),hr?trendOf(trH,3):0,'var(--warn)','var(--warn)');showTr($('st'),spo2?trendOf(trS,1):0,'var(--ok)','var(--bad)');let c,i,t,d,sigIssue=false;
  if(!hr&&!spo2){const q=noSig?Math.floor((Date.now()-noSig)/1000):0;if(q>=15){sigIssue=true;c='warn';i='📡';t='Signal issue';d='No reliable reading for 15 s. Check sensor fit or the connection, or just keep waiting. Changing source is optional.'}else{c='warn';i='🖐';t='No signal';d='Searching for pulse… '+q+' s (10 s warm-up, readings are averaged)'}}
  else if(spo2&&spo2<T.crit){c='bad';i='⚠';t='CRITICAL: SpO₂ < '+T.crit+'%';d='Stop, descend, get help now'}
  else if(spo2&&spo2<T.warn){c='bad';i='⚠';t='LOW: SpO₂ < '+T.warn+'%';d='Rest and breathe deeply'}
@@ -347,15 +349,20 @@ function render(){if(document.hidden)return;const{hr,spo2}=vit,T=th();$('hv').te
 
 /* ---------- safety ---------- */
 let grace=0,lowSince=0,cool=0,graceI;
-function startGrace(){grace=Date.now()+10000;$('gS').textContent=vit.spo2;$('graceT').textContent=vit.spo2<th().crit?'CRITICAL LOW OXYGEN':'Low oxygen detected';$('gC').textContent=10;$('grace').classList.add('on');if(cfg.group||peers.size)pubMe();
+function startGrace(){grace=Date.now()+10000;navigator.vibrate&&navigator.vibrate([200,100,200,100,400]);$('gS').textContent=vit.spo2;$('graceT').textContent=vit.spo2<th().crit?'CRITICAL LOW OXYGEN':'Low oxygen detected';$('gC').textContent=10;$('grace').classList.add('on');if(cfg.group)pubMe();
  graceI=setInterval(()=>{const left=Math.ceil((grace-Date.now())/1000);$('gC').textContent=Math.max(left,0);beep(1000);navigator.vibrate&&navigator.vibrate(200);if(left<=0){endGrace();cool=Date.now()+120000;sendAlert('lowspo2')}},1000)}
 function endGrace(){clearInterval(graceI);grace=0;$('grace').classList.remove('on')}
-function imOk(){endGrace();cool=Date.now()+60000;lowSince=0;okAt=Date.now();if(cfg.group||peers.size)pubMe()}
+function imOk(){endGrace();cool=Date.now()+60000;lowSince=0;okAt=Date.now();if(cfg.group)pubMe()}
 function alertLogic(){const s=vit.spo2,now=Date.now();if(grace){if(s>=th().warn+2)endGrace();return}if(now<cool)return;
  if(s&&s<th().warn){lowSince=lowSince||now;if(now-lowSince>=5000)startGrace()}else lowSince=0}
 async function sendAlert(kind){const p=await getPos(),a={id:myId+Date.now().toString(36),mid:myId,name:cfg.name,kind,hr:vit.hr,spo2:vit.spo2,lat:p?p.lat:null,lon:p?p.lon:null,t:Date.now()};
  showEmergency(a,true);ingest({id:a.id,ttl:6,k:'a',d:a},'local')}
-function showEmergency(a,own){$('emT').textContent=own?'SOS SENT':'EMERGENCY';$('emN').textContent=String(a.name||'Skier').slice(0,30);
+let emOwn=false,reAt=0;
+function dismissEm(){if(emOwn)$('mOk').classList.add('on');else{$('em').classList.remove('on');alarm(false)}}   /* own alert: ask first. A buddy's alert: just close */
+function keepAlert(){$('mOk').classList.remove('on')}
+function okDismiss(){$('mOk').classList.remove('on');$('em').classList.remove('on');alarm(false);emOwn=false;reAt=0;cool=Date.now()+60000;lowSince=0;okAt=Date.now();if(cfg.group)pubMe()}
+function rearm(){$('mOk').classList.remove('on');$('em').classList.remove('on');alarm(false);emOwn=false;reAt=Date.now()+60000;toast('Checking again in 60 s. Buddies are alerted again if SpO₂ is still low.')}
+function showEmergency(a,own){emOwn=!!own;$('emT').textContent=own?'SOS SENT':'EMERGENCY';$('emN').textContent=String(a.name||'Skier').slice(0,30);
  $('emK').textContent=a.kind==='sos'?'Manual SOS':'Low blood oxygen';$('emV').textContent=`HR ${+a.hr||'--'} bpm · SpO₂ ${+a.spo2||'--'}%`;
  $('emG').innerHTML=isFinite(a.lat)&&a.lat!==null&&isFinite(a.lon)?`<a href="https://maps.google.com/?q=${+a.lat},${+a.lon}" target="_blank" rel="noopener">📍 ${(+a.lat).toFixed(5)}, ${(+a.lon).toFixed(5)}</a>`:'📍 GPS unavailable';
  $('emW').textContent=new Date(a.t||Date.now()).toLocaleTimeString();$('em').classList.add('on');alarm(true)}
@@ -365,7 +372,7 @@ sb.addEventListener('pointerdown',e=>{e.preventDefault();sosStop();sbar.style.tr
 ['pointerup','pointerleave','pointercancel'].forEach(n=>sb.addEventListener(n,sosStop));sb.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- hybrid networking ---------- */
-let es=null,cloud={},seen=new Set(),peers=new Map(),members={},pend=null;
+let es=null,cloud={},seen=new Set(),members={};
 const fbBase=()=>cfg.fb.replace(/\/$/,'');
 function cloudStop(){es&&es.close();es=null}
 function cloudStart(){cloudStop();cloud={};if(!/^https:\/\//.test(cfg.fb)||!cfg.group)return;
@@ -382,22 +389,27 @@ function ingest(m,src){if(!m||!m.id||typeof m.id!=='string'||seen.has(m.id))retu
  if(m.k==='m'){if(d.id&&d.id!==myId&&Date.now()-(+d.t||0)<36e5)members[d.id]=Object.assign({},d,{rx:Date.now()})}
  else if(m.k==='a'&&d.mid!==myId&&Date.now()-d.t<3e5){sosAt[d.mid]=d.t;showEmergency(d)}
  if(src!=='cloud')cloudPush(m);
- if(m.ttl>0)peers.forEach((p,pid)=>{if(pid!==src&&p.dc.readyState==='open')try{p.dc.send(JSON.stringify({id:m.id,k:m.k,d:m.d,ttl:m.ttl-1}))}catch(e){}})}
+}
 function pubMe(){if(cfg.role==='g')return;const now=Date.now();ingest({id:myId+'@'+now,ttl:3,k:'m',d:{id:myId,name:cfg.name,hr:vit.hr,spo2:vit.spo2,src:mode,alt:cfg.alt,ok:okAt,t:now,lat:lastPos?lastPos.lat:null,lon:lastPos?lastPos.lon:null}},'local')}
 function normFb(v){v=String(v).trim();const m=v.match(/^(https:\/\/[^\/?#]+)\/groups\/([A-Za-z0-9_-]+)/),f=cleanFb(m?m[1]:v);if(m&&f){$('gc').value=m[2].slice(0,24).toUpperCase()}return f}
-function openJoin(code,fb){$('jn').value=cfg.name&&cfg.name!=='Skier'?cfg.name:'';$('gc').value=code!=null?code:cfg.group;$('fb').value=fb||cfg.fb||DEFAULT_FB;
- $('mBud').classList.remove('on');$('mJoin').classList.add('on');setTimeout(()=>$('jn').focus(),60)}
-function joinG(){const n=$('jn').value.trim().slice(0,20),f=normFb($('fb').value),g=$('gc').value.replace(/[^A-Za-z0-9_-]/g,'').slice(0,24).toUpperCase();
- if(!n)return toast('Enter your name');if(!g)return toast('Enter a group name / code');
+let joinWasCreate=false;
+function groupUI(){const g=!!cfg.group;$('gBadge').style.display=g?'flex':'none';$('gBtns').style.display=g?'none':'grid';if(g)$('gBadgeT').textContent=cfg.group}
+function openJoin(code,fb,create){const c=create===true;joinWasCreate=c;$('jT').textContent=c?'➕ Create Group':'➕ Join Group';
+ $('jP').textContent=c?'Keep this code or type your own, then share the QR with your group.':'Enter the group code, or scan the QR code your group shared.';$('jGo').textContent=c?'Create':'Join';
+ $('gc').value=c?(code||Math.random().toString(36).slice(2,8).toUpperCase()):(code!=null?code:cfg.group||'');$('fb').value=fb||cfg.fb||DEFAULT_FB;
+ $('mBud').classList.remove('on');$('mJoin').classList.add('on');setTimeout(()=>$('gc').focus(),60)}
+function joinG(){const f=normFb($('fb').value),g=$('gc').value.replace(/[^A-Za-z0-9_-]/g,'').slice(0,24).toUpperCase(),n=(cfg.name||'').trim()||'Skier';
+ if(!g)return toast('Enter the group code');
  if(!f)return toast('Firebase link must be your Realtime Database URL, like https://xxx-default-rtdb.region.firebasedatabase.app');
- cfg.fb=f;cfg.name=n;cfg.group=g;$('nm').value=n;saveCfg();warned={};$('mJoin').classList.remove('on');watchPos();cloudStart();renderQR();pubMe();renderBuddies();toast('Joined group '+g+' as '+n)}
+ cfg.fb=f;cfg.name=n;cfg.group=g;saveCfg();warned={};$('mJoin').classList.remove('on');watchPos();cloudStart();renderQR();pubMe();renderBuddies();toast((joinWasCreate?'Created group ':'Joined group ')+g);if(joinWasCreate)openM('Bud')}
 function setHost(v){cfg.host=v.trim();saveCfg();renderQR()}
 /* base address for join links: the host box if filled, else the page's own origin+path (never hardcoded localhost) */
-function hostBase(){const h=(cfg.host||'').trim(),web=/^https?:/.test(location.protocol);
- if(!h)return web?location.origin+location.pathname:'';
+const PUBLIC_URL='https://sarnite.github.io/SkiSense/';
+function hostBase(){const h=(cfg.host||'').trim(),web=/^https?:/.test(location.protocol),local=!web||/^(localhost|127\.|\[?::1)/.test(location.hostname||'');
+ if(!h)return web&&!local?location.origin+location.pathname:PUBLIC_URL;   /* live address, or the deployed page when opened locally */
  try{const u=new URL(/^https?:\/\//.test(h)?h:'http://'+h);if(u.pathname==='/'){const fn=location.pathname.split('/').pop();if(web)u.pathname=location.pathname;else if(/\.html?$/i.test(fn))u.pathname='/'+fn}return u.origin+u.pathname}catch(e){return''}}
 function joinUrl(){const b=hostBase();return b&&cfg.group?b+'#join='+encodeURIComponent(cfg.group)+'&fb='+encodeURIComponent(fbBase()):''}  /* '' when no web address is known: the raw database URL is NEVER used as a link */
-function renderQR(){const b=$('qrBox'),c=$('qrC');$('gInfo').textContent=cfg.group?'In group '+cfg.group+' as '+cfg.name:'Not in a group';if(!cfg.group||!/^https:\/\//.test(cfg.fb)){b.style.display='none';return}
+function renderQR(){const b=$('qrBox'),c=$('qrC');groupUI();if(!cfg.group||!/^https:\/\//.test(cfg.fb)){b.style.display='none';return}
  const u=joinUrl();$('qrU').textContent=u||'No web address yet. Type the Host / Server URL above (e.g. https://yourname.github.io/skisense/), or open this page from its http/https address instead of a file.';b.style.display='block';if(!u||!window.qrcode){c.style.display='none';return}
  try{const q=qrcode(0,'M');q.addData(u);q.make();const n=q.getModuleCount(),z=Math.max(3,Math.floor(240/(n+8))),w=(n+8)*z,x=c.getContext('2d');c.width=c.height=w;c.style.display='block';x.fillStyle='#fff';x.fillRect(0,0,w,w);x.fillStyle='#000';
   for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+4)*z,(r+4)*z,z,z)}catch(e){c.style.display='none'}}
@@ -415,11 +427,11 @@ function buddyHTML(m){const st=memStat(m),gps=isFinite(m.lat)&&m.lat!==null,ago=
  return `<div class="card bd flex justify-between items-center" style="border-color:var(--${st.c})"><div><b>${esc(m.name||'Skier')}</b>${m.src==='sim'?' <span class="mut text-xs">(SIM)</span>':''}${m.alt==='ext'?' <span class="mut text-xs">🏔</span>':''}<div class="text-sm font-bold" style="color:var(--${st.c})">${st.t}</div><div class="mut text-xs">${ago}${gps?` · <a href="https://maps.google.com/?q=${+m.lat},${+m.lon}" target="_blank" rel="noopener" style="text-decoration:underline">📍 map</a>`:''}</div></div><div class="text-right"><b style="font-size:1.8rem;color:var(--${st.c})">${+m.spo2||'--'}%</b><div class="mut">${+m.hr||'--'} bpm</div></div></div>`}
 function renderBuddies(){const now=Date.now();for(const k in members)if(now-(+members[k].t||members[k].rx)>36e5){delete members[k];delete warned[k]}
  const a=Object.values(members).sort((x,y)=>memStat(y).r-memStat(x).r),h=a.map(buddyHTML).join(''),g=cfg.role==='g';
- $('bl').innerHTML=g?'<p class="mut text-sm">Group list is on the main screen.</p>':(h||'<p class="mut text-sm">No buddies yet. Join a group code or link a mesh peer.</p>');
+ $('bl').innerHTML=g?'<p class="mut text-sm">Group list is on the main screen.</p>':(h||'<p class="mut text-sm">No buddies yet. Create or join a group to see your buddies.</p>');
  if(!g)return;const r=a.map(m=>memStat(m).r);
  $('wl').innerHTML=h||'<div class="card mut text-sm">No skiers yet. Open 🧑‍🤝‍🧑, enter the same group code and Firebase URL as your skiers, then Join.</div>';
  $('wn').textContent=a.length;$('wOk').textContent=r.filter(x=>x===0).length;$('wWa').textContent=r.filter(x=>x===1||x===2).length;$('wBa').textContent=r.filter(x=>x>=3).length;
- $('wg').textContent=cfg.group?'Group '+cfg.group+' · '+(!cfg.fb?'no cloud URL':es&&es.readyState===1?'cloud live':'cloud connecting…'):(peers.size?'Mesh only':'Not in a group')}
+ $('wg').textContent=cfg.group?'Group '+cfg.group+' · '+(!cfg.fb?'no cloud URL':es&&es.readyState===1?'cloud live':'cloud connecting…'):'Not in a group'}
 /* coach alarm only when a skier's state gets worse (rank >= 2 and changed) */
 function watchCheck(){for(const id in members){const m=members[id],st=memStat(m);
  if(!(id in warned))warned[id]=st.r===2?2:0;
@@ -428,15 +440,7 @@ function watchCheck(){for(const id in members){const m=members[id],st=memStat(m)
 function applyRole(){const g=cfg.role==='g';$('roleB').textContent=g?'👀 Role: Coach / Parent (tap to switch)':'🎿 Role: Skier (tap to switch)';
  $('watch').style.display=g?'':'none';$('me').style.display=g?'none':'';if(g){endGrace();hideFB();keepAwake()}renderBuddies()}
 function toggleRole(){cfg.role=cfg.role==='g'?'s':'g';saveCfg();warned={};applyRole();if(cfg.role==='s'&&cfg.group)pubMe();toast(cfg.role==='g'?'Coach / Parent mode: watching group':'Skier mode: sharing your vitals')}
-const newPC=()=>new RTCPeerConnection({iceServers:[]});
-const gathered=pc=>new Promise(r=>{if(pc.iceGatheringState==='complete')return r();pc.addEventListener('icegatheringstatechange',()=>pc.iceGatheringState==='complete'&&r());setTimeout(r,3000)});
-function wire(pid,dc){dc.onopen=()=>{peers.set(pid,{dc});toast('Mesh peer linked');pubMe()};dc.onclose=()=>peers.delete(pid);dc.onmessage=e=>{try{ingest(JSON.parse(e.data),pid)}catch(x){}}}
-const rid=()=>'p'+Math.random().toString(36).slice(2,6);
-async function p2pOffer(){if(!window.RTCPeerConnection)return toast('WebRTC unavailable');const pc=newPC();wire(rid(),pc.createDataChannel('m'));await pc.setLocalDescription(await pc.createOffer());await gathered(pc);pend=pc;$('sdp').value=btoa(JSON.stringify(pc.localDescription));toast('Invite ready – send it to your buddy')}
-async function p2pAccept(){try{const d=JSON.parse(atob($('sdp').value.trim()));
- if(d.type==='offer'){const pc=newPC(),pid=rid();pc.ondatachannel=e=>wire(pid,e.channel);await pc.setRemoteDescription(d);await pc.setLocalDescription(await pc.createAnswer());await gathered(pc);$('sdp').value=btoa(JSON.stringify(pc.localDescription));toast('Answer ready – send it back')}
- else if(d.type==='answer'&&pend){await pend.setRemoteDescription(d);pend=null;toast('Linking…')}}catch(e){toast('Invalid code')}}
-const netStat=()=>$('net').textContent=(cfg.fb&&cfg.group?(es&&es.readyState===1?'☁ live':'☁ …'):'☁ off')+' · 📡 '+peers.size+(cfg.role==='g'?' · 👀':'');
+const netStat=()=>$('net').textContent=(cfg.fb&&cfg.group?(es&&es.readyState===1?'☁ live':'☁ …'):'☁ off')+(cfg.role==='g'?' · 👀':'');
 
 /* ---------- main loops ---------- */
 function tick1s(){
@@ -446,8 +450,8 @@ function tick1s(){
  if(linkLost){vit.hr=vit.spo2=0;medH.length=medS.length=0}
  if(linkLost||vit.hr||vit.spo2)noSig=0;else noSig=noSig||Date.now();autoRecover();
  if(cfg.role!=='g'&&vit.hr&&vit.spo2){acc.h.push(vit.hr);acc.s.push(vit.spo2)}
- render();if(cfg.role!=='g')alertLogic();if(Date.now()-minStart>=minMs())closeMinute();
- if((cfg.group||peers.size)&&++ntk%5===0)pubMe();
+ pushTr(trH,vit.hr);pushTr(trS,vit.spo2);render();if(cfg.role!=='g'){alertLogic();if(reAt&&Date.now()>=reAt){reAt=0;if(vit.spo2&&vit.spo2<th().warn)sendAlert('lowspo2');else toast('Vitals back in range, no new alert')}}if(Date.now()-minStart>=minMs())closeMinute();
+ if((cfg.group)&&++ntk%5===0)pubMe();
  const s=Date.now()-t0;$('up').textContent=pad(s/36e5|0)+':'+pad(s/6e4%60|0)+':'+pad(s/1e3%60|0);netStat();if(cfg.role==='g'||$('mBud').classList.contains('on'))renderBuddies();if(cfg.role==='g')watchCheck()}
 applyCfg();altUI();drawTrend();$('nm').value=cfg.name;applyRole();connUI();
 setInterval(tick1s,1000);setInterval(()=>{if(mode==='sim')simStep(.04);if(!document.hidden)drawPPG()},40);
